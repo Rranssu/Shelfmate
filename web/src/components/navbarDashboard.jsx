@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { FaUserCog, FaMoon, FaSun } from 'react-icons/fa';
 import './styles/navbarDashboard.css';
 
-// 1. Added libraryName to props
-function NavbarDashboard({ isDarkMode, toggleDarkMode, onAdminLogin, libraryUid, libraryName }) {  
+function NavbarDashboard({ isDarkMode, toggleDarkMode, onAdminLogin, libraryUid, libraryName }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -15,32 +14,26 @@ function NavbarDashboard({ isDarkMode, toggleDarkMode, onAdminLogin, libraryUid,
     setPassword('');
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setMessage('');
-    setPassword('');
-  };
+  const handleCloseModal = () => setIsModalOpen(false);
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     if (!libraryUid) {
-      setMessage('Error: No library UID available.');
+      setMessage('Error: Missing Library ID.');
       return;
     }
 
     setLoading(true);
     setMessage('');
+    
     try {
-      // This sends the entered password and the libraryUid to the backend
-      // The backend must check if this password matches the one created in Registration
+      // 1. Send the UID and the Input Password to backend
       const response = await fetch('http://localhost:5000/api/admin-login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          password: password,
           libraryUid: libraryUid,
+          password: password, // This checks against the password stored in DB from Registration
         }),
       });
 
@@ -49,14 +42,14 @@ function NavbarDashboard({ isDarkMode, toggleDarkMode, onAdminLogin, libraryUid,
         setMessage('Login successful!');
         setTimeout(() => {
           handleCloseModal();
-          onAdminLogin();  // Navigate to /admin
+          onAdminLogin(); // Navigate to Admin Dashboard
         }, 1000);
       } else {
-        setMessage(data.message || 'Login failed');
+        setMessage(data.message || 'Incorrect Password');
       }
     } catch (error) {
       console.error('Error:', error);
-      setMessage('Network error. Please try again.');
+      setMessage('Server connection error.');
     }
     setLoading(false);
   };
@@ -70,7 +63,7 @@ function NavbarDashboard({ isDarkMode, toggleDarkMode, onAdminLogin, libraryUid,
           </button>
         </div>
         <div className="navbar-center">
-          {/* 2. Display the libraryName passed from Registration */}
+          {/* 2. Display the Dynamic Library Name */}
           <h1 className="school-name">{libraryName || 'My Library'}</h1>
         </div>
         <div className="navbar-right">
@@ -80,30 +73,35 @@ function NavbarDashboard({ isDarkMode, toggleDarkMode, onAdminLogin, libraryUid,
         </div>
       </nav>
 
+      {/* Admin Login Modal */}
       {isModalOpen && (
         <div className="modal-overlay">
           <div className="modal-content">
             <h2>Admin Login</h2>
-            <p style={{marginBottom: '15px', fontSize: '0.9rem', color: '#666'}}>
-              Please enter the password you created during registration.
+            <p style={{fontSize: '0.9rem', color: '#666', marginBottom: '15px'}}>
+              Enter the password you created during registration.
             </p>
             <form onSubmit={handleLoginSubmit}>
               <div className="form-group">
-                <label htmlFor="password">Password</label>
                 <input
                   type="password"
-                  id="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  placeholder="Enter admin password"
+                  placeholder="Password"
+                  className="password-input"
                 />
               </div>
-              {message && <p className="message">{message}</p>}
-              <button type="submit" disabled={loading}>
-                {loading ? 'Logging in...' : 'Login'}
-              </button>
-              <button type="button" onClick={handleCloseModal}>Cancel</button>
+              {message && <p className={`message ${message.includes('successful') ? 'success' : 'error'}`}>{message}</p>}
+              
+              <div style={{display: 'flex', gap: '10px', marginTop: '15px'}}>
+                <button type="submit" className="login-submit-btn" disabled={loading}>
+                  {loading ? 'Checking...' : 'Login'}
+                </button>
+                <button type="button" className="cancel-btn" onClick={handleCloseModal}>
+                  Cancel
+                </button>
+              </div>
             </form>
           </div>
         </div>
