@@ -1,12 +1,10 @@
-import React, { useContext } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { FiHome, FiBook, FiUsers, FiLogOut, FiActivity } from "react-icons/fi";
 import "./styles/admin.css";
-import AdminDashboard from "../components/AdminDashboard";
-import { UserContext } from "../context/userContext"; // temporary context
+import AdminDashboard from "../components/adminDashboard";
 
 export default function AdminPage() {
-  const { sessions, borrows, logout } = useContext(UserContext);
   const nav = useNavigate();
 
   return (
@@ -22,21 +20,22 @@ export default function AdminPage() {
           <button className="menu-item active" onClick={() => nav("/admin")}>
             <FiHome className="menu-icon" /> Dashboard
           </button>
+
           <button className="menu-item">
             <FiUsers className="menu-icon" /> Students
           </button>
+
           <button className="menu-item">
             <FiBook className="menu-icon" /> Books
           </button>
+
           <button className="menu-item">
             <FiActivity className="menu-icon" /> Activity Logs
           </button>
+
           <button
             className="menu-item logout"
-            onClick={() => {
-              logout();
-              nav("/");
-            }}
+            onClick={() => nav("/")}
           >
             <FiLogOut className="menu-icon" /> Logout
           </button>
@@ -45,7 +44,6 @@ export default function AdminPage() {
 
       {/* ---------------------- MAIN CONTENT ---------------------- */}
       <AdminDashboard />
-      </div>
-
+    </div>
   );
 }
