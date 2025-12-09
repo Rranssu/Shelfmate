@@ -26,12 +26,13 @@ export default function AdminSide() {
           <FiBook className="menu-icon" /> Books
         </button>
 
-        <button className="menu-item">
-          <FiActivity className="menu-icon" /> Entry Logbook
-        </button>
+        <button className="menu-item" onClick={() => nav("/admin/logbook")}>
+            <FiActivity className="menu-icon" /> Entry Logbook
+          </button>
+
 
         <button
-          className="menu-item logout"
+          className="menu-item logout" 
           onClick={() => nav("/")}
         >
           <FiLogOut className="menu-icon" /> Logout
