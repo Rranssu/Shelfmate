@@ -1,10 +1,19 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { FiHome, FiBook, FiUsers, FiLogOut, FiActivity } from "react-icons/fi";
+import { FaRegAddressBook } from "react-icons/fa6";
 import "./styles/adminSide.css";
 
-export default function AdminSide() {
+export default function AdminSide({ onMenuClick }) {
   const nav = useNavigate();
+
+  const handleMenuClick = (view) => {
+    if (view === 'logout') {
+      nav("/");
+    } else {
+      onMenuClick(view);
+    }
+  };
 
   return (
     <div className="admin-sidebar">
@@ -14,26 +23,25 @@ export default function AdminSide() {
       </div>
 
       <div className="sidebar-menu">
-        <button className="menu-item active" onClick={() => nav("/admin")}>
+        <button className="menu-item active" onClick={() => handleMenuClick("dashboard")}>
           <FiHome className="menu-icon" /> Dashboard
         </button>
 
-        <button className="menu-item">
-          <FiUsers className="menu-icon" /> Students
+        <button className="menu-item" onClick={() => handleMenuClick("users")}>
+          <FiUsers className="menu-icon" /> Users
         </button>
 
-        <button className="menu-item">
-          <FiBook className="menu-icon" /> Books
+        <button className="menu-item" onClick={() => handleMenuClick("inventory")}>
+          <FiBook className="menu-icon" /> Inventory
         </button>
 
-        <button className="menu-item" onClick={() => nav("/admin/logbook")}>
-            <FiActivity className="menu-icon" /> Entry Logbook
-          </button>
-
+        <button className="menu-item" onClick={() => handleMenuClick("entry-logbook")}>
+          <FaRegAddressBook className="menu-icon" /> Entry Logbook
+        </button>
 
         <button
-          className="menu-item logout" 
-          onClick={() => nav("/")}
+          className="menu-item logout"
+          onClick={() => handleMenuClick("logout")}
         >
           <FiLogOut className="menu-icon" /> Logout
         </button>
