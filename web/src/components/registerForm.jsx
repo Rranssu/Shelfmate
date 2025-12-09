@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Add this import
 import './styles/registerForm.css';
 
 function RegisterForm() {
@@ -10,6 +11,7 @@ function RegisterForm() {
   });
   const [message, setMessage] = useState('');
   const [libraryUid, setLibraryUid] = useState(null);
+  const navigate = useNavigate(); // Add this hook
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -34,8 +36,12 @@ function RegisterForm() {
       const data = await response.json();
       if (response.ok) {
         setMessage('Registration successful!');
-        setLibraryUid(data.library_uid); // Set the UID
-        // Optionally, reset form
+        setLibraryUid(data.library_uid);
+        // Navigate to dashboard with libraryUid
+        setTimeout(() => {
+          navigate('/dashboard', { state: { libraryUid: data.library_uid } });
+        }, 1000); // Optional delay for user to see the message
+        // Reset form
         setFormData({ libraryName: '', libraryType: '', email: '', password: '' });
       } else {
         setMessage(data.message || 'Registration failed');
