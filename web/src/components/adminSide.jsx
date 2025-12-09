@@ -1,20 +1,10 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom"; // Use Link for routing
 import { FiHome, FiBook, FiUsers, FiLogOut, FiActivity } from "react-icons/fi";
 import { FaRegAddressBook } from "react-icons/fa6";
 import "./styles/adminSide.css";
 
-export default function AdminSide({ onMenuClick }) {
-  const nav = useNavigate();
-
-  const handleMenuClick = (view) => {
-    if (view === 'logout') {
-      nav("/");
-    } else {
-      onMenuClick(view);
-    }
-  };
-
+export default function AdminSide() {
   return (
     <div className="admin-sidebar">
       <div className="sidebar-logo">
@@ -23,28 +13,25 @@ export default function AdminSide({ onMenuClick }) {
       </div>
 
       <div className="sidebar-menu">
-        <button className="menu-item active" onClick={() => handleMenuClick("dashboard")}>
+        <Link to="/admin" className="menu-item active">
           <FiHome className="menu-icon" /> Dashboard
-        </button>
+        </Link>
 
-        <button className="menu-item" onClick={() => handleMenuClick("users")}>
+        <Link to="/admin/users" className="menu-item">
           <FiUsers className="menu-icon" /> Users
-        </button>
+        </Link>
 
-        <button className="menu-item" onClick={() => handleMenuClick("inventory")}>
+        <Link to="/admin/inventory" className="menu-item">
           <FiBook className="menu-icon" /> Inventory
-        </button>
+        </Link>
 
-        <button className="menu-item" onClick={() => handleMenuClick("entry-logbook")}>
+        <Link to="/admin/logbook" className="menu-item">
           <FaRegAddressBook className="menu-icon" /> Entry Logbook
-        </button>
+        </Link>
 
-        <button
-          className="menu-item logout"
-          onClick={() => handleMenuClick("logout")}
-        >
+        <Link to="/" className="menu-item logout">
           <FiLogOut className="menu-icon" /> Logout
-        </button>
+        </Link>
       </div>
     </div>
   );
