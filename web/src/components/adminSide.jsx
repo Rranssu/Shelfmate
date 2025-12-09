@@ -27,7 +27,7 @@ export default function AdminSide() {
         </button>
 
         <button className="menu-item">
-          <FiActivity className="menu-icon" /> Activity Logs
+          <FiActivity className="menu-icon" /> Entry Logbook
         </button>
 
         <button
