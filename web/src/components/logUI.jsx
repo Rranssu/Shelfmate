@@ -6,9 +6,7 @@ function LogUI({ onBack }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle log entry logic here (e.g., API call)
     console.log('Log Entry submitted for School ID:', schoolId);
-    // Optionally, call onBack to return to dashboard
     onBack();
   };
 

@@ -11,17 +11,14 @@ import "./styles/admin.css";
 export default function AdminPage() {
   return (
     <div className="admin" style={{ display: "flex" }}>
-      {/* ---------------------- SIDEBAR ---------------------- */}
       <AdminSide />
 
-      {/* ---------------------- MAIN CONTENT ---------------------- */}
       <div style={{ flex: 1, padding: "20px" }}>
         <Routes>
           <Route path="/" element={<AdminDashboard />} />
           <Route path="users" element={<AdminUsers />} />
           <Route path="inventory" element={<AdminInventory />} />
           <Route path="logbook" element={<EntryLogbook />} />
-          {/* Add more routes as needed */}
         </Routes>
       </div>
     </div>

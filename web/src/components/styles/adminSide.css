@@ -43,7 +43,7 @@
   align-items: center;
   gap: 10px;
   font-family: 'shelfmate', sans-serif;
-  text-decoration: none; /* Remove underline for links */
+  text-decoration: none;
 }
 
 .menu-item:hover {
@@ -62,7 +62,6 @@
     font-size: 1.3rem;
 }
 
-/* MOBILE RESPONSIVE */
 @media (max-width: 768px) {
     .admin-sidebar {
         width: 100%;

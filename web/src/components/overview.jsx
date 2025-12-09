@@ -3,7 +3,6 @@ import { FaBookOpen, FaClipboardList, FaClock } from 'react-icons/fa';
 import './styles/overview.css';
 
 function Overview() {
-  // Mock data
   const stats = {
     booksBorrowed: 45,
     entries: 32,

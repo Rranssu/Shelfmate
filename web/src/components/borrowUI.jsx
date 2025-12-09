@@ -6,7 +6,6 @@ function BorrowUI({ onBack }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [dueDate, setDueDate] = useState('');
 
-  // Calculate max date (2 months from today)
   const today = new Date();
   const maxDate = new Date(today);
   maxDate.setMonth(today.getMonth() + 2);
@@ -14,9 +13,7 @@ function BorrowUI({ onBack }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle borrow logic here (e.g., API call to search and borrow)
     console.log('Borrow search submitted for Student ID:', studentId, ', Book/Author:', searchQuery, ', Due Date:', dueDate);
-    // Optionally, call onBack to return to dashboard
     onBack();
   };
 

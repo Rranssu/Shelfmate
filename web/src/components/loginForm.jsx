@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './styles/loginForm.css'; // New CSS file for the login form component
+import './styles/loginForm.css';
 
 function LoginForm() {
   const [formData, setFormData] = useState({
@@ -13,7 +13,6 @@ function LoginForm() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission logic here (e.g., API call)
     console.log('Login submitted:', formData);
   };
 

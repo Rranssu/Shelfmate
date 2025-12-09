@@ -21,7 +21,7 @@
 }
 
 .logbook-table-container {
-  overflow-x: auto; /* For mobile responsiveness */
+  overflow-x: auto;
 }
 
 .logbook-table {

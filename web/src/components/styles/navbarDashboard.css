@@ -6,9 +6,9 @@
   color: white;
   padding: 12px 15px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  position: sticky; /* Makes the navbar stick to the top of the screen when scrolling */
-  top: 0; /* Sticks at the very top */
-  z-index: 1000; /* Ensures it stays above other content */
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
 .navbar-left, .navbar-right {

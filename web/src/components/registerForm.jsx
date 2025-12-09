@@ -9,7 +9,7 @@ function RegisterForm() {
     password: ''
   });
   const [message, setMessage] = useState('');
-  const [libraryUid, setLibraryUid] = useState(null); // State for Library UID
+  const [libraryUid, setLibraryUid] = useState(null);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });

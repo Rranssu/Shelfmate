@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import RegisterForm from '../components/registerForm.jsx'; // Import RegisterForm
-import LoginForm from '../components/loginForm.jsx'; // Import LoginForm
+import RegisterForm from '../components/registerForm.jsx';
+import LoginForm from '../components/loginForm.jsx';
 import './styles/register.css';
 import Pic from '../assets/books.jpg'
 
 function Register() {
-  const [isLogin, setIsLogin] = useState(false); // State to toggle between register and login
+  const [isLogin, setIsLogin] = useState(false);
 
   return (
     <section className="register">
@@ -29,7 +29,6 @@ function Register() {
               Login
             </button>
           </div>
-          {/* Conditionally Render Form */}
           {isLogin ? <LoginForm /> : <RegisterForm />}
         </div>
       </div>

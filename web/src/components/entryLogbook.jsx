@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import "./styles/entryLogbook.css";
 
-// Temporary dummy data
 const dummyLogbook = [
   {
     studentId: "student001",
@@ -18,7 +17,6 @@ const dummyLogbook = [
 ];
 
 export default function EntryLogbook() {
-  // Initialize state directly with dummy data
   const [logbook] = useState(dummyLogbook);
 
   return (

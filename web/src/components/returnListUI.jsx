@@ -2,8 +2,7 @@ import React from 'react';
 import './styles/returnListUI.css';
 
 function ReturnListUI({ studentId, onBack }) {
-  // Mock data for demonstration (replace with real data from API)
-  const studentName = "John Doe"; // Example student name
+  const studentName = "John Doe";
   const borrowedBooks = [
     { id: 1, title: "Harry Potter and the Sorcerer's Stone", author: "J.K. Rowling", dueDate: "2023-10-15" },
     { id: 2, title: "To Kill a Mockingbird", author: "Harper Lee", dueDate: "2023-10-20" },
@@ -11,9 +10,7 @@ function ReturnListUI({ studentId, onBack }) {
   ];
 
   const handleReturn = (bookId) => {
-    // Handle return logic here (e.g., API call)
     console.log('Returning book ID:', bookId);
-    // Optionally, update the list or show confirmation
   };
 
   return (

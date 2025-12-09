@@ -6,7 +6,6 @@ function ReturnUI({ onBack, onSeeBorrowed }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Pass studentId to the next view
     onSeeBorrowed(studentId);
   };
 

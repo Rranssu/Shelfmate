@@ -14,7 +14,7 @@ function NavbarDashboard({ isDarkMode, toggleDarkMode, onAdminLogin }) {
   };
 
   const handleLoginSuccess = () => {
-    onAdminLogin(); // Navigate to admin page
+    onAdminLogin();
   };
 
   return (

@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom"; // Use Link for routing
+import { Link } from "react-router-dom";
 import { FiHome, FiBook, FiUsers, FiLogOut, FiActivity } from "react-icons/fi";
 import { FaRegAddressBook } from "react-icons/fa6";
 import "./styles/adminSide.css";

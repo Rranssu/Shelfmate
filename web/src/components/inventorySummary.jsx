@@ -2,7 +2,6 @@ import React from 'react';
 import './styles/inventorySummary.css';
 
 function InventorySummary() {
-  // Mock data
   const summary = {
     totalBooks: 500,
     availableBooks: 450,

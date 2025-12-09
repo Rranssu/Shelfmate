@@ -4,7 +4,7 @@
   border-radius: 0;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border-top: 4px solid #aa0022;
-  height: 100%; /* Ensures equal height in grid */
+  height: 100%;
 }
 
 .recent-entry-container h2 {

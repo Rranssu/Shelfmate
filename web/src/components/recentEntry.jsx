@@ -2,7 +2,6 @@ import React from 'react';
 import './styles/recentEntry.css';
 
 function RecentEntry() {
-  // Mock data
   const entries = [
     { id: 1, student: 'John Doe', book: 'Harry Potter', action: 'Borrowed', time: '10:30 AM' },
     { id: 2, student: 'Jane Smith', book: 'To Kill a Mockingbird', action: 'Returned', time: '11:15 AM' },
