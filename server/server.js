@@ -34,7 +34,8 @@ function generateUID() {
 
 // API Routes
 
-// Register Library
+// 1. UPDATED REGISTER ROUTE
+// Creates the library AND creates the first Admin User in the users table
 app.post('/api/register', async (req, res) => {
   const { libraryName, libraryType, email, password } = req.body;
   
@@ -42,20 +43,61 @@ app.post('/api/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const uid = generateUID();
     
-    const query = 'INSERT INTO libraries (name, type, email, password, uid) VALUES (?, ?, ?, ?, ?)';
-    db.execute(query, [libraryName, libraryType, email, hashedPassword, uid], (err, result) => {
+    // 1. Insert into Libraries table (Start Transaction logic ideally, but keeping it simple for XAMPP)
+    const libQuery = 'INSERT INTO libraries (name, type, email, uid) VALUES (?, ?, ?, ?)';
+    
+    db.execute(libQuery, [libraryName, libraryType, email, uid], (err, libResult) => {
       if (err) {
-        if (err.code === 'ER_DUP_ENTRY') {
-          return res.status(400).json({ message: 'Email already exists' });
-        }
-        return res.status(500).json({ message: 'Database error' });
+        if (err.code === 'ER_DUP_ENTRY') return res.status(400).json({ message: 'Email already exists' });
+        return res.status(500).json({ message: 'Database error on library creation' });
       }
-      res.status(201).json({ message: 'Registration successful', library_uid: uid });
+
+      // 2. Insert into Users table as the "Admin"
+      // We use the same email and password provided in registration
+      const userQuery = 'INSERT INTO users (name, email, password, library_uid, is_admin) VALUES (?, ?, ?, ?, ?)';
+      
+      db.execute(userQuery, ['Admin', email, hashedPassword, uid, true], (err, userResult) => {
+        if (err) {
+          console.error(err);
+          return res.status(500).json({ message: 'Library created, but failed to create Admin user' });
+        }
+        
+        res.status(201).json({ message: 'Registration successful', library_uid: uid });
+      });
     });
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
+// 2. UPDATED ADMIN LOGIN ROUTE
+// Checks the 'users' table for the admin password instead of the libraries table
+app.post('/api/admin-login', (req, res) => {
+  const { password, libraryUid } = req.body;
+  
+  // Find the user in this library who has the 'is_admin' flag set to TRUE
+  const query = 'SELECT password FROM users WHERE library_uid = ? AND is_admin = TRUE LIMIT 1';
+  
+  db.execute(query, [libraryUid], async (err, results) => {
+    if (err) return res.status(500).json({ message: 'Database error' });
+    
+    if (results.length === 0) {
+      return res.status(404).json({ message: 'Admin account not found' });
+    }
+    
+    const adminUser = results[0];
+    
+    // Compare the input password with the hashed password in the users table
+    const isValidPassword = await bcrypt.compare(password, adminUser.password);
+    
+    if (!isValidPassword) {
+      return res.status(401).json({ message: 'Invalid admin password' });
+    }
+    
+    res.json({ message: 'Admin login successful' });
+  });
+});
+
 
 // Login Library
 app.post('/api/login', (req, res) => {
