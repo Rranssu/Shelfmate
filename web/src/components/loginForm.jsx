@@ -6,14 +6,41 @@ function LoginForm() {
     email: '',
     password: ''
   });
+  const [message, setMessage] = useState('');
+  const [libraryData, setLibraryData] = useState(null);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Login submitted:', formData);
+    try {
+      const response = await fetch('http://localhost:5000/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setMessage('Login successful!');
+        setLibraryData(data);
+        setFormData({ email: '', password: '' });
+      } else {
+        setMessage(data.message || 'Login failed');
+        setLibraryData(null);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setMessage('Network error. Please try again.');
+      setLibraryData(null);
+    }
   };
 
   return (
@@ -22,6 +49,14 @@ function LoginForm() {
       <p className="login-description">
         Access your Shelf Mate library dashboard. Enter your credentials to get started.
       </p>
+      {message && <p className="message">{message}</p>}
+      {libraryData && (
+        <div className="login-success">
+          <p>Welcome, <strong>{libraryData.library_name}</strong>!</p>
+          <p>Library Type: {libraryData.library_type}</p>
+          <p>UID: {libraryData.library_uid}</p>
+        </div>
+      )}
       <form className="login-form" onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="email">Email</label>

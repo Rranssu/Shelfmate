@@ -1,13 +1,41 @@
 import React, { useState } from 'react';
 import './styles/logUI.css';
 
-function LogUI({ onBack }) {
+function LogUI({ onBack, libraryUid }) {  // Added libraryUid prop
   const [schoolId, setSchoolId] = useState('');
+  const [message, setMessage] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Log Entry submitted for School ID:', schoolId);
-    onBack();
+    if (!libraryUid) {
+      setMessage('Error: No library UID available. Please log in again.');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:5000/api/log-entry', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          libraryUid: libraryUid,
+          studentId: schoolId,
+        }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setMessage('Entry logged successfully!');
+        setSchoolId('');  // Reset form
+        // Optionally, call onBack() or stay on page
+      } else {
+        setMessage(data.message || 'Failed to log entry');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setMessage('Network error. Please try again.');
+    }
   };
 
   return (
@@ -16,6 +44,7 @@ function LogUI({ onBack }) {
         <button className="back-btn" onClick={onBack}>← Dashboard</button>
         <h2 className="log-title">Log Entry</h2>
         <p className="log-description">Enter the Student ID to log a new entry.</p>
+        {message && <p className="message">{message}</p>}
         <form className="log-form" onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="schoolId">Student ID Number</label>
@@ -37,4 +66,3 @@ function LogUI({ onBack }) {
 }
 
 export default LogUI;
-

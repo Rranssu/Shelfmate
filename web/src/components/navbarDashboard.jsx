@@ -2,19 +2,60 @@ import React, { useState } from 'react';
 import { FaUserCog, FaMoon, FaSun } from 'react-icons/fa';
 import './styles/navbarDashboard.css';
 
-function NavbarDashboard({ isDarkMode, toggleDarkMode, onAdminLogin }) {
+function NavbarDashboard({ isDarkMode, toggleDarkMode, onAdminLogin, libraryUid }) {  // Added libraryUid prop
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [password, setPassword] = useState('');
+  const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleAdminClick = () => {
     setIsModalOpen(true);
+    setMessage('');
+    setPassword('');
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
+    setMessage('');
+    setPassword('');
   };
 
-  const handleLoginSuccess = () => {
-    onAdminLogin();
+  const handleLoginSubmit = async (e) => {
+    e.preventDefault();
+    if (!libraryUid) {
+      setMessage('Error: No library UID available.');
+      return;
+    }
+
+    setLoading(true);
+    setMessage('');
+    try {
+      const response = await fetch('http://localhost:5000/api/admin-login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          password: password,
+          libraryUid: libraryUid,
+        }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setMessage('Login successful!');
+        setTimeout(() => {
+          handleCloseModal();
+          onAdminLogin();  // Navigate to /admin
+        }, 1000);
+      } else {
+        setMessage(data.message || 'Login failed');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setMessage('Network error. Please try again.');
+    }
+    setLoading(false);
   };
 
   return (
@@ -34,9 +75,34 @@ function NavbarDashboard({ isDarkMode, toggleDarkMode, onAdminLogin }) {
           </button>
         </div>
       </nav>
+
+      {isModalOpen && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h2>Admin Login</h2>
+            <form onSubmit={handleLoginSubmit}>
+              <div className="form-group">
+                <label htmlFor="password">Password</label>
+                <input
+                  type="password"
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  placeholder="Enter admin password"
+                />
+              </div>
+              {message && <p className="message">{message}</p>}
+              <button type="submit" disabled={loading}>
+                {loading ? 'Logging in...' : 'Login'}
+              </button>
+              <button type="button" onClick={handleCloseModal}>Cancel</button>
+            </form>
+          </div>
+        </div>
+      )}
     </>
   );
 }
 
 export default NavbarDashboard;
-

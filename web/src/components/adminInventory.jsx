@@ -1,19 +1,38 @@
-import React, { useState } from 'react';
-import { FaPlus, FaSort, FaEdit, FaTrash, FaBook } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react';
+import { FaPlus, FaSort, FaEdit, FaTrash } from 'react-icons/fa';
 import './styles/adminInventory.css';
 
-function AdminInventory() {
-  const [books, setBooks] = useState([
-    { id: 1, title: 'Harry Potter and the Sorcerer\'s Stone', author: 'J.K. Rowling', library_id: 1 },
-    { id: 2, title: 'To Kill a Mockingbird', author: 'Harper Lee', library_id: 1 },
-    { id: 3, title: '1984', author: 'George Orwell', library_id: 2 }
-  ]);
+function AdminInventory({ libraryUid }) {
+  const [books, setBooks] = useState([]);
   const [sortBy, setSortBy] = useState('title');
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingBook, setEditingBook] = useState(null);
-  const [newBook, setNewBook] = useState({ title: '', author: '', library_id: '' });
+  const [newBook, setNewBook] = useState({ title: '', author: '' });
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [bookToDelete, setBookToDelete] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    if (!libraryUid) return;
+    fetchBooks();
+  }, [libraryUid]);
+
+  const fetchBooks = async () => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/books?libraryUid=${libraryUid}`);
+      const data = await response.json();
+      if (response.ok) {
+        setBooks(data.books);
+      } else {
+        setMessage(data.message || 'Failed to fetch books');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setMessage('Network error. Please try again.');
+    }
+    setLoading(false);
+  };
 
   const sortedBooks = [...books].sort((a, b) => {
     if (sortBy === 'title') return a.title.localeCompare(b.title);
@@ -21,23 +40,57 @@ function AdminInventory() {
     return 0;
   });
 
-  const handleAddBook = () => {
-    if (newBook.title && newBook.author && newBook.library_id) {
-      setBooks([...books, { ...newBook, id: Date.now() }]);
-      setNewBook({ title: '', author: '', library_id: '' });
-      setShowAddModal(false);
+  const handleAddBook = async () => {
+    if (!newBook.title || !newBook.author) return;
+    
+    try {
+      const response = await fetch('http://localhost:5000/api/books', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...newBook, libraryUid }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setMessage('Book added successfully');
+        setNewBook({ title: '', author: '' });
+        setShowAddModal(false);
+        fetchBooks(); // Refresh list
+      } else {
+        setMessage(data.message || 'Failed to add book');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setMessage('Network error. Please try again.');
     }
   };
 
   const handleEditBook = (book) => {
     setEditingBook(book);
-    setNewBook({ title: book.title, author: book.author, library_id: book.library_id });
+    setNewBook({ title: book.title, author: book.author });
   };
 
-  const handleUpdateBook = () => {
-    setBooks(books.map(b => b.id === editingBook.id ? { ...b, ...newBook } : b));
-    setEditingBook(null);
-    setNewBook({ title: '', author: '', library_id: '' });
+  const handleUpdateBook = async () => {
+    if (!editingBook) return;
+    
+    try {
+      const response = await fetch(`http://localhost:5000/api/books/${editingBook.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...newBook, libraryUid }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setMessage('Book updated successfully');
+        setEditingBook(null);
+        setNewBook({ title: '', author: '' });
+        fetchBooks(); // Refresh list
+      } else {
+        setMessage(data.message || 'Failed to update book');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setMessage('Network error. Please try again.');
+    }
   };
 
   const handleDeleteClick = (book) => {
@@ -45,10 +98,28 @@ function AdminInventory() {
     setShowDeleteModal(true);
   };
 
-  const confirmDelete = () => {
-    setBooks(books.filter(b => b.id !== bookToDelete.id));
-    setShowDeleteModal(false);
-    setBookToDelete(null);
+  const confirmDelete = async () => {
+    if (!bookToDelete) return;
+    
+    try {
+      const response = await fetch(`http://localhost:5000/api/books/${bookToDelete.id}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ libraryUid }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setMessage('Book deleted successfully');
+        setShowDeleteModal(false);
+        setBookToDelete(null);
+        fetchBooks(); // Refresh list
+      } else {
+        setMessage(data.message || 'Failed to delete book');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setMessage('Network error. Please try again.');
+    }
   };
 
   const cancelDelete = () => {
@@ -56,10 +127,13 @@ function AdminInventory() {
     setBookToDelete(null);
   };
 
+  if (loading) return <p>Loading books...</p>;
+
   return (
     <div className="admin-inventory-wrapper">
       <div className="admin-inventory-container">
         <h2>Inventory Management</h2>
+        {message && <p className="message">{message}</p>}
         <div className="inventory-controls">
           <button className="add-btn" onClick={() => setShowAddModal(true)}>
             <FaPlus /> Add Book
@@ -88,12 +162,6 @@ function AdminInventory() {
               value={newBook.author}
               onChange={(e) => setNewBook({ ...newBook, author: e.target.value })}
             />
-            <input
-              type="number"
-              placeholder="Library ID"
-              value={newBook.library_id}
-              onChange={(e) => setNewBook({ ...newBook, library_id: e.target.value })}
-            />
             <button onClick={handleUpdateBook}>Update</button>
             <button onClick={() => setEditingBook(null)}>Cancel</button>
           </div>
@@ -105,7 +173,6 @@ function AdminInventory() {
               <div className="book-details">
                 <p><strong>{book.title}</strong></p>
                 <p>by {book.author}</p>
-                <p>Library ID: {book.library_id}</p>
               </div>
               <div className="book-actions">
                 <button className="edit-btn" onClick={() => handleEditBook(book)}>
@@ -134,12 +201,6 @@ function AdminInventory() {
                 placeholder="Author"
                 value={newBook.author}
                 onChange={(e) => setNewBook({ ...newBook, author: e.target.value })}
-              />
-              <input
-                type="number"
-                placeholder="Library ID"
-                value={newBook.library_id}
-                onChange={(e) => setNewBook({ ...newBook, library_id: e.target.value })}
               />
               <div className="modal-actions">
                 <button onClick={handleAddBook}>Add</button>

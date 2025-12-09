@@ -1,20 +1,53 @@
 import React, { useState } from 'react';
 import './styles/borrowUI.css';
 
-function BorrowUI({ onBack }) {
+function BorrowUI({ onBack, libraryUid }) {  // Added libraryUid prop
   const [studentId, setStudentId] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [dueDate, setDueDate] = useState('');
+  const [message, setMessage] = useState('');
 
   const today = new Date();
   const maxDate = new Date(today);
   maxDate.setMonth(today.getMonth() + 2);
   const maxDateString = maxDate.toISOString().split('T')[0];
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Borrow search submitted for Student ID:', studentId, ', Book/Author:', searchQuery, ', Due Date:', dueDate);
-    onBack();
+    if (!libraryUid) {
+      setMessage('Error: No library UID available. Please log in again.');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:5000/api/borrow-book', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          libraryUid: libraryUid,
+          studentId: studentId,
+          searchQuery: searchQuery,
+          dueDate: dueDate,
+        }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setMessage(data.message);
+        // Reset form
+        setStudentId('');
+        setSearchQuery('');
+        setDueDate('');
+        // Optionally, call onBack() or stay on page
+      } else {
+        setMessage(data.message || 'Failed to borrow book');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setMessage('Network error. Please try again.');
+    }
   };
 
   return (
@@ -23,6 +56,7 @@ function BorrowUI({ onBack }) {
         <button className="back-btn" onClick={onBack}>← Dashboard</button>
         <h2 className="borrow-title">Borrow Book</h2>
         <p className="borrow-description">Enter the Student ID, search for a book by title or author, and select a due date (max 2 months).</p>
+        {message && <p className="message">{message}</p>}
         <form className="borrow-form" onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="studentId">Student ID Number</label>
@@ -69,4 +103,3 @@ function BorrowUI({ onBack }) {
 }
 
 export default BorrowUI;
-

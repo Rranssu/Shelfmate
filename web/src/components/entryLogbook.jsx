@@ -1,28 +1,39 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./styles/entryLogbook.css";
 
-const dummyLogbook = [
-  {
-    studentId: "student001",
-    name: "Alice",
-    loginTime: new Date("2025-12-09T08:15:00"),
-    logoutTime: new Date("2025-12-09T12:30:00")
-  },
-  {
-    studentId: "student002",
-    name: "Bob",
-    loginTime: new Date("2025-12-09T09:00:00"),
-    logoutTime: new Date("2025-12-09T11:45:00")
-  }
-];
+export default function EntryLogbook({ libraryUid }) {
+  const [logbook, setLogbook] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState('');
 
-export default function EntryLogbook() {
-  const [logbook] = useState(dummyLogbook);
+  useEffect(() => {
+    if (!libraryUid) return;
+    fetchLogs();
+  }, [libraryUid]);
+
+  const fetchLogs = async () => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/logs?libraryUid=${libraryUid}`);
+      const data = await response.json();
+      if (response.ok) {
+        setLogbook(data.logs);
+      } else {
+        setMessage(data.message || 'Failed to fetch logs');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setMessage('Network error. Please try again.');
+    }
+    setLoading(false);
+  };
+
+  if (loading) return <p>Loading logs...</p>;
 
   return (
     <div className="entry-logbook-wrapper">
       <div className="entry-logbook-container">
         <h2>Student Entry Logbook</h2>
+        {message && <p className="message">{message}</p>}
         <div className="logbook-table-container">
           <table className="logbook-table">
             <thead>
@@ -30,16 +41,14 @@ export default function EntryLogbook() {
                 <th>Student ID</th>
                 <th>Name</th>
                 <th>Login Time</th>
-                <th>Logout Time</th>
               </tr>
             </thead>
             <tbody>
-              {logbook.map((entry) => (
-                <tr key={entry.studentId}>
-                  <td>{entry.studentId}</td>
-                  <td>{entry.name}</td>
-                  <td>{entry.loginTime.toLocaleString()}</td>
-                  <td>{entry.logoutTime.toLocaleString()}</td>
+              {logbook.map((entry, index) => (
+                <tr key={index}>
+                  <td>{entry.student_id}</td>
+                  <td>{entry.name || 'Unknown'}</td>
+                  <td>{new Date(entry.logged_at).toLocaleString()}</td>
                 </tr>
               ))}
             </tbody>
