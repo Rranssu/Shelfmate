@@ -1,0 +1,11 @@
+.dashboard {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f4f4f4 0%, #e0e0e0 100%);
+  font-family: 'shelfmate', sans-serif;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.dashboard.dark {
+  background: linear-gradient(135deg, #333 0%, #555 100%);
+  color: #f4f4f4;
+}

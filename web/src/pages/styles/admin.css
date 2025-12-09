@@ -1,0 +1,13 @@
+.admin {
+  display: flex;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f4f4f4 0%, #e0e0e0 100%);
+  font-family: 'shelfmate', sans-serif;
+}
+
+@media (max-width: 768px) {
+  .admin {
+    flex-direction: column;
+  }
+}
+

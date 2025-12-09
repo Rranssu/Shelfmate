@@ -1,0 +1,141 @@
+.dashboard-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px 15px;
+  min-height: calc(100vh - 60px);
+  animation: fadeIn 0.5s ease-in; /* Added fade-in transition */
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dashboard-container {
+  max-width: 700px;
+  width: 100%;
+  background-color: white;
+  padding: 30px;
+  border-radius: 0;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  border-top: 4px solid #aa0022;
+  position: relative;
+  text-align: center;
+}
+
+.dashboard.dark .dashboard-container {
+  background-color: #444;
+  color: #f4f4f4;
+}
+
+.dashboard-container::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background-color: #aa0022;
+  border-radius: 0 0 4px 4px;
+}
+
+.dashboard-title {
+  font-size: 2.2rem;
+  font-weight: bold;
+  color: #aa0022;
+  margin-bottom: 15px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard.dark .dashboard-title {
+  color: #ffd700;
+}
+
+.dashboard-description {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 30px;
+  color: #555;
+}
+
+.dashboard.dark .dashboard-description {
+  color: #ccc;
+}
+
+.dashboard-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 15px;
+}
+
+.dashboard-btn {
+  background-color: #aa0022;
+  color: white;
+  border: none;
+  padding: 15px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+  font-family: 'shelfmate', sans-serif;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.dashboard-btn:hover {
+  background-color: #cc0033;
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.dashboard-btn:active {
+  transform: scale(0.95);
+}
+
+.btn-icon {
+  font-size: 1.8rem;
+}
+
+@media (max-width: 768px) {
+  .dashboard-content {
+    padding: 15px 10px;
+  }
+
+  .dashboard-container {
+    padding: 20px 15px;
+  }
+
+  .dashboard-title {
+    font-size: 1.8rem;
+  }
+
+  .dashboard-description {
+    font-size: 0.95rem;
+  }
+
+  .dashboard-buttons {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .dashboard-btn {
+    padding: 12px;
+    font-size: 0.95rem;
+  }
+
+  .btn-icon {
+    font-size: 1.3rem;
+  }
+}

@@ -1,0 +1,67 @@
+.dashboard-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #aa0022;
+  color: white;
+  padding: 12px 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: sticky; /* Makes the navbar stick to the top of the screen when scrolling */
+  top: 0; /* Sticks at the very top */
+  z-index: 1000; /* Ensures it stays above other content */
+}
+
+.navbar-left, .navbar-right {
+  flex: 1;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.navbar-right {
+  justify-content: flex-end;
+}
+
+.navbar-center {
+  flex: 2;
+  text-align: center;
+}
+
+.admin-btn, .dark-mode-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.admin-btn:hover, .dark-mode-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.school-name {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin: 0;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 768px) {
+  .dashboard-navbar {
+    padding: 8px 12px;
+  }
+
+  .school-name {
+    font-size: 1rem;
+  }
+
+  .admin-btn, .dark-mode-btn {
+    font-size: 0.9rem;
+    padding: 5px 8px;
+  }
+}

@@ -1,0 +1,42 @@
+.admin-dashboard {
+  flex: 1;
+  padding: 20px;
+  background-color: #f4f4f4;
+}
+
+.dashboard-content {
+  max-width: 1600px; /* Increased from 1200px for wider components on computer screens */
+  margin: 0 auto;
+}
+
+.dashboard-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #aa0022;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.dashboard-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+@media (max-width: 768px) {
+  .admin-dashboard {
+    padding: 10px;
+  }
+
+  .dashboard-title {
+    font-size: 2rem;
+  }
+
+  .dashboard-vertical {
+    gap: 20px;
+  }
+
+  .dashboard-content {
+    max-width: 100%; /* Full width on mobile */
+  }
+}
