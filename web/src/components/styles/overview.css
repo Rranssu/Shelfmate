@@ -1,0 +1,61 @@
+.overview-container {
+  background-color: white;
+  padding: 20px;
+  border-radius: 0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-top: 4px solid #aa0022;
+  height: 100%; /* Ensures equal height in grid */
+}
+
+.overview-container h2 {
+  font-size: 1.5rem;
+  color: #aa0022;
+  margin-bottom: 15px;
+}
+
+.overview-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+}
+
+.stat-icon {
+  font-size: 2rem;
+  color: #aa0022;
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #aa0022;
+  margin: 0;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: #555;
+  margin: 5px 0 0 0;
+}
+
+@media (max-width: 768px) {
+  .overview-stats {
+    gap: 10px;
+  }
+
+  .stat-item {
+    padding: 10px;
+  }
+
+  .stat-number {
+    font-size: 1.5rem;
+  }
+}

@@ -1,0 +1,54 @@
+.inventory-summary-container {
+  background-color: white;
+  padding: 20px;
+  border-radius: 0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-top: 4px solid #aa0022;
+  height: 100%; /* Ensures equal height in grid */
+}
+
+.inventory-summary-container h2 {
+  font-size: 1.5rem;
+  color: #aa0022;
+  margin-bottom: 15px;
+}
+
+.summary-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.summary-item {
+  padding: 15px;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.summary-number {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #aa0022;
+  margin: 0;
+}
+
+.summary-label {
+  font-size: 0.9rem;
+  color: #555;
+  margin: 5px 0 0 0;
+}
+
+@media (max-width: 768px) {
+  .summary-stats {
+    gap: 10px;
+  }
+
+  .summary-item {
+    padding: 10px;
+  }
+
+  .summary-number {
+    font-size: 1.5rem;
+  }
+}
