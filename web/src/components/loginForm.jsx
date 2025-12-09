@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Add this import
 import './styles/loginForm.css';
 
 function LoginForm() {
@@ -8,6 +9,7 @@ function LoginForm() {
   });
   const [message, setMessage] = useState('');
   const [libraryData, setLibraryData] = useState(null);
+  const navigate = useNavigate(); // Add this hook
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -31,6 +33,10 @@ function LoginForm() {
       if (response.ok) {
         setMessage('Login successful!');
         setLibraryData(data);
+        // Navigate to dashboard with libraryUid
+        setTimeout(() => {
+          navigate('/dashboard', { state: { libraryUid: data.library_uid } });
+        }, 1000); // Optional delay for user to see the message
         setFormData({ email: '', password: '' });
       } else {
         setMessage(data.message || 'Login failed');
