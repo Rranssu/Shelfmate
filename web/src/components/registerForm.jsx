@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Add this import
+import { useNavigate } from 'react-router-dom';
 import './styles/registerForm.css';
 
 function RegisterForm() {
@@ -11,7 +11,7 @@ function RegisterForm() {
   });
   const [message, setMessage] = useState('');
   const [libraryUid, setLibraryUid] = useState(null);
-  const navigate = useNavigate(); // Add this hook
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -37,11 +37,18 @@ function RegisterForm() {
       if (response.ok) {
         setMessage('Registration successful!');
         setLibraryUid(data.library_uid);
-        // Navigate to dashboard with libraryUid
+        
+        // --- UPDATED NAVIGATION ---
         setTimeout(() => {
-          navigate('/dashboard', { state: { libraryUid: data.library_uid } });
-        }, 1000); // Optional delay for user to see the message
-        // Reset form
+          navigate('/dashboard', { 
+            state: { 
+              libraryUid: data.library_uid, 
+              libraryName: formData.libraryName // Passing the name here
+            } 
+          });
+        }, 1000); 
+        // --------------------------
+
         setFormData({ libraryName: '', libraryType: '', email: '', password: '' });
       } else {
         setMessage(data.message || 'Registration failed');
