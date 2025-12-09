@@ -4,8 +4,17 @@
   font-family: 'shelfmate', sans-serif;
 }
 
+.admin-content {
+  flex: 1;
+  padding: 20px;
+}
+
 @media (max-width: 768px) {
   .admin {
     flex-direction: column;
+  }
+
+  .admin-content {
+    padding: 10px;
   }
 }

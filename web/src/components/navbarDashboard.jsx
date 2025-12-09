@@ -34,7 +34,6 @@ function NavbarDashboard({ isDarkMode, toggleDarkMode, onAdminLogin }) {
           </button>
         </div>
       </nav>
-      <AdminLoginModal isOpen={isModalOpen} onClose={handleCloseModal} onLoginSuccess={handleLoginSuccess} />
     </>
   );
 }
