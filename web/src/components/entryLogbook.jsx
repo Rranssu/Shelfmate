@@ -1,6 +1,6 @@
-// src/components/entryLogbook.jsx
 import React, { useState } from "react";
-import "../components/styles/adminSide.css";
+import "./styles/entryLogbook.css";
+
 // Temporary dummy data
 const dummyLogbook = [
   {
@@ -22,34 +22,32 @@ export default function EntryLogbook() {
   const [logbook] = useState(dummyLogbook);
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold text-[var(--crimson)] mb-6">
-        Student Entry Logbook
-      </h1>
-      <table style={{ width: "100%", borderCollapse: "collapse" }}>
-        <thead>
-          <tr style={{ backgroundColor: "#aa0022", color: "white" }}>
-            <th style={{ padding: "10px", border: "1px solid #ccc" }}>Student ID</th>
-            <th style={{ padding: "10px", border: "1px solid #ccc" }}>Name</th>
-            <th style={{ padding: "10px", border: "1px solid #ccc" }}>Login Time</th>
-            <th style={{ padding: "10px", border: "1px solid #ccc" }}>Logout Time</th>
-          </tr>
-        </thead>
-        <tbody>
-          {logbook.map((entry) => (
-            <tr key={entry.studentId}>
-              <td style={{ padding: "8px", border: "1px solid #ccc" }}>{entry.studentId}</td>
-              <td style={{ padding: "8px", border: "1px solid #ccc" }}>{entry.name}</td>
-              <td style={{ padding: "8px", border: "1px solid #ccc" }}>
-                {entry.loginTime.toLocaleString()}
-              </td>
-              <td style={{ padding: "8px", border: "1px solid #ccc" }}>
-                {entry.logoutTime.toLocaleString()}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className="entry-logbook-wrapper">
+      <div className="entry-logbook-container">
+        <h2>Student Entry Logbook</h2>
+        <div className="logbook-table-container">
+          <table className="logbook-table">
+            <thead>
+              <tr>
+                <th>Student ID</th>
+                <th>Name</th>
+                <th>Login Time</th>
+                <th>Logout Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              {logbook.map((entry) => (
+                <tr key={entry.studentId}>
+                  <td>{entry.studentId}</td>
+                  <td>{entry.name}</td>
+                  <td>{entry.loginTime.toLocaleString()}</td>
+                  <td>{entry.logoutTime.toLocaleString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }

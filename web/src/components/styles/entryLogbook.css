@@ -1,0 +1,69 @@
+.entry-logbook-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.entry-logbook-container {
+  background-color: white;
+  padding: 30px;
+  border-radius: 0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-top: 4px solid #aa0022;
+  width: 100%;
+  max-width: 1200px;
+}
+
+.entry-logbook-container h2 {
+  font-size: 1.5rem;
+  color: #aa0022;
+  margin-bottom: 20px;
+}
+
+.logbook-table-container {
+  overflow-x: auto; /* For mobile responsiveness */
+}
+
+.logbook-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'shelfmate', sans-serif;
+}
+
+.logbook-table th,
+.logbook-table td {
+  padding: 12px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+.logbook-table th {
+  background-color: #aa0022;
+  color: white;
+  font-weight: bold;
+}
+
+.logbook-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.logbook-table tr:hover {
+  background-color: #f1f1f1;
+}
+
+@media (max-width: 768px) {
+  .entry-logbook-container {
+    padding: 20px;
+    max-width: 100%;
+  }
+
+  .logbook-table th,
+  .logbook-table td {
+    padding: 8px;
+    font-size: 0.9rem;
+  }
+
+  .logbook-table-container {
+    overflow-x: auto;
+  }
+}
