@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { FaUserCog, FaMoon, FaSun } from 'react-icons/fa';
-import AdminLoginModal from './adminLoginModal.jsx';
 import './styles/navbarDashboard.css';
 
 function NavbarDashboard({ isDarkMode, toggleDarkMode, onAdminLogin }) {
