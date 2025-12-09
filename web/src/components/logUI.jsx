@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './styles/logUI.css';
 
-function LogUI({ onBack, libraryUid }) {  // Added libraryUid prop
+function LogUI({ onBack, libraryUid }) {  // libraryUid prop is already included
   const [schoolId, setSchoolId] = useState('');
   const [message, setMessage] = useState('');
 
@@ -19,7 +19,7 @@ function LogUI({ onBack, libraryUid }) {  // Added libraryUid prop
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          libraryUid: libraryUid,
+          libraryUid: libraryUid,  // Uses libraryUid in the request
           studentId: schoolId,
         }),
       });
