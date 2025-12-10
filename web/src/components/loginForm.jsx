@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Add this import
+import { useNavigate } from 'react-router-dom'; 
 import './styles/loginForm.css';
 
-function LoginForm() {
+function LoginForm({ onSwitchToRegister }) { // Added prop to switch views
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
   const [message, setMessage] = useState('');
   const [libraryData, setLibraryData] = useState(null);
-  const navigate = useNavigate(); // Add this hook
+  const navigate = useNavigate(); 
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -33,10 +33,19 @@ function LoginForm() {
       if (response.ok) {
         setMessage('Login successful!');
         setLibraryData(data);
-        // Navigate to dashboard with libraryUid
+        
+        // --- UPDATED NAVIGATION ---
         setTimeout(() => {
-          navigate('/dashboard', { state: { libraryUid: data.library_uid } });
-        }, 1000); // Optional delay for user to see the message
+          navigate('/dashboard', { 
+            state: { 
+              // We get these from the backend response now
+              libraryUid: data.library_uid, 
+              libraryName: data.library_name 
+            } 
+          });
+        }, 1000); 
+        // --------------------------
+
         setFormData({ email: '', password: '' });
       } else {
         setMessage(data.message || 'Login failed');
@@ -56,13 +65,7 @@ function LoginForm() {
         Access your Shelf Mate library dashboard. Enter your credentials to get started.
       </p>
       {message && <p className="message">{message}</p>}
-      {libraryData && (
-        <div className="login-success">
-          <p>Welcome, <strong>{libraryData.library_name}</strong>!</p>
-          <p>Library Type: {libraryData.library_type}</p>
-          <p>UID: {libraryData.library_uid}</p>
-        </div>
-      )}
+      
       <form className="login-form" onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="email">Email</label>
@@ -88,6 +91,13 @@ function LoginForm() {
         </div>
         <button type="submit" className="login-btn">Login</button>
       </form>
+
+      {/* Optional: Link to switch to Register */}
+      {onSwitchToRegister && (
+        <p style={{marginTop: '20px', textAlign: 'center'}}>
+          Don't have a library account? <button onClick={onSwitchToRegister} style={{background:'none', border:'none', color:'blue', cursor:'pointer', textDecoration:'underline'}}>Register here</button>
+        </p>
+      )}
     </>
   );
 }
