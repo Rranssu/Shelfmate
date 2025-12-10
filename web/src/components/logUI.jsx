@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import './styles/logUI.css';
 
-function LogUI({ onBack, libraryUid }) {  // libraryUid prop is already included
+function LogUI({ onBack, libraryUid }) {
   const [schoolId, setSchoolId] = useState('');
   const [message, setMessage] = useState('');
+  // New state to control if the message is red (error) or green (success)
+  const [messageType, setMessageType] = useState(''); 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!libraryUid) {
       setMessage('Error: No library UID available. Please log in again.');
+      setMessageType('error');
       return;
     }
 
@@ -19,22 +22,27 @@ function LogUI({ onBack, libraryUid }) {  // libraryUid prop is already included
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          libraryUid: libraryUid,  // Uses libraryUid in the request
+          libraryUid: libraryUid,
           studentId: schoolId,
         }),
       });
 
       const data = await response.json();
+      
       if (response.ok) {
-        setMessage('Entry logged successfully!');
-        setSchoolId('');  // Reset form
-        // Optionally, call onBack() or stay on page
+        // Success: Show green message and clear input
+        setMessage(data.message || 'Entry logged successfully!');
+        setMessageType('success');
+        setSchoolId(''); 
       } else {
+        // Error (Student not found): Show red message and KEEP input so they can fix typo
         setMessage(data.message || 'Failed to log entry');
+        setMessageType('error');
       }
     } catch (error) {
       console.error('Error:', error);
       setMessage('Network error. Please try again.');
+      setMessageType('error');
     }
   };
 
@@ -44,7 +52,14 @@ function LogUI({ onBack, libraryUid }) {  // libraryUid prop is already included
         <button className="back-btn" onClick={onBack}>← Dashboard</button>
         <h2 className="log-title">Log Entry</h2>
         <p className="log-description">Enter the Student ID to log a new entry.</p>
-        {message && <p className="message">{message}</p>}
+        
+        {/* Dynamic styling for message based on success/error */}
+        {message && (
+          <p className={`message ${messageType === 'error' ? 'error-msg' : 'success-msg'}`}>
+            {message}
+          </p>
+        )}
+        
         <form className="log-form" onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="schoolId">Student ID Number</label>
@@ -53,7 +68,10 @@ function LogUI({ onBack, libraryUid }) {  // libraryUid prop is already included
               id="schoolId"
               name="schoolId"
               value={schoolId}
-              onChange={(e) => setSchoolId(e.target.value)}
+              onChange={(e) => {
+                setSchoolId(e.target.value);
+                setMessage(''); // Clear message when user starts typing again
+              }}
               required
               placeholder="Enter School ID"
             />

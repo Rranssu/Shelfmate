@@ -125,25 +125,35 @@ app.post('/api/admin-login', (req, res) => {
 // 2. DASHBOARD OPERATIONS
 // ==========================================
 
-// Log Student Entry
+// Log Student Entry (Strict Mode: Student must exist)
 app.post('/api/log-entry', (req, res) => {
   const { libraryUid, studentId } = req.body;
   
-  const libraryQuery = 'SELECT id FROM libraries WHERE uid = ?';
-  db.execute(libraryQuery, [libraryUid], (err, libraryResults) => {
-    if (err) return res.status(500).json({ message: 'Database error' });
-    if (libraryResults.length === 0) return res.status(404).json({ message: 'Library not found' });
+  // 1. Check if student exists
+  const checkStudentQuery = 'SELECT id, name FROM students WHERE student_id = ? AND library_uid = ?';
+  db.execute(checkStudentQuery, [studentId, libraryUid], (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ message: 'Database error checking student' });
+    }
     
-    // Ensure student exists (Upsert)
-    const studentQuery = 'INSERT INTO students (student_id, library_uid) VALUES (?, ?) ON DUPLICATE KEY UPDATE id=id';
-    db.execute(studentQuery, [studentId, libraryUid], (err) => {
-      if (err) return res.status(500).json({ message: 'Database error' });
-      
-      const logQuery = 'INSERT INTO logs (library_uid, student_id) VALUES (?, ?)';
-      db.execute(logQuery, [libraryUid, studentId], (err) => {
-        if (err) return res.status(500).json({ message: 'Database error' });
-        res.json({ message: 'Entry logged successfully' });
+    // 2. Reject if not found
+    if (results.length === 0) {
+      return res.status(404).json({ 
+        message: 'Student ID not registered. Please register in Admin panel.' 
       });
+    }
+    
+    const studentName = results[0].name;
+
+    // 3. Log entry
+    const logQuery = 'INSERT INTO logs (library_uid, student_id) VALUES (?, ?)';
+    db.execute(logQuery, [libraryUid, studentId], (err) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ message: 'Database error logging entry' });
+      }
+      res.json({ message: `Entry logged for ${studentName}` });
     });
   });
 });
@@ -161,6 +171,8 @@ app.post('/api/borrow-book', (req, res) => {
     
     const book = bookResults[0];
     
+    // Note: Borrowing currently allows auto-creation of students (Upsert). 
+    // If you want strict borrowing, copy the logic from log-entry.
     const studentQuery = 'INSERT INTO students (student_id, library_uid) VALUES (?, ?) ON DUPLICATE KEY UPDATE id=id';
     db.execute(studentQuery, [studentId, libraryUid], (err) => {
       if (err) return res.status(500).json({ message: 'Database error' });
