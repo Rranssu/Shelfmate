@@ -1,20 +1,25 @@
 import React, { useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom'; // 1. Import useNavigate
 import './styles/hero.css';
 
 function Hero() {
   const textRef = useRef(null);
+  const navigate = useNavigate(); // 2. Initialize the hook
 
   useEffect(() => {
     const words = ['Books', 'Harry Potter', 'The Chronicles of Narnia', 'Percy Jackson', 'One Piece'];
     let wordIndex = 0;
     let charIndex = 0;
     let isDeleting = false;
-    const typingSpeed = 150; //
+    const typingSpeed = 150;
     const deletingSpeed = 100;
     const delayBetweenWords = 2000;
 
     const typeWriter = () => {
       const currentWord = words[wordIndex];
+      // Check if currentWord is defined to prevent errors during unmount/state changes
+      if (!currentWord) return; 
+
       const currentText = isDeleting
         ? currentWord.substring(0, charIndex--)
         : currentWord.substring(0, charIndex++);
@@ -45,7 +50,10 @@ function Hero() {
           Discover the World of <span ref={textRef} className="animated-text"></span>
           <span className="cursor">|</span>
         </h1>
-        <button className="get-started-btn">Get Started</button>
+        {/* 3. Add onClick handler to navigate */}
+        <button className="get-started-btn" onClick={() => navigate('/register')}>
+          Get Started
+        </button>
       </div>
     </section>
   );
