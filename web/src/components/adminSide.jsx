@@ -51,20 +51,16 @@ export default function AdminSide({ libraryUid, libraryName }) {
           <FaRegAddressBook className="menu-icon" /> Entry Logbook
         </Link>
 
-        {/* Spacer to push bottom items down (optional, but looks nice) */}
+        <Link to="/" className="menu-item logout">
+          <FiLogOut className="menu-icon" /> Logout
+        </Link>
         <div style={{ marginTop: '20px', borderTop: '1px solid rgba(255,255,255,0.1)' }}></div>
-
-        {/* 2. NEW BUTTON: Back to Dashboard */}
         <Link 
           to="/dashboard" 
           state={{ libraryUid, libraryName }} // IMPORTANT: Pass state back so Dashboard knows who you are
           className="menu-item"
         >
           <FiArrowLeft className="menu-icon" /> Back to Library
-        </Link>
-
-        <Link to="/" className="menu-item logout">
-          <FiLogOut className="menu-icon" /> Logout
         </Link>
       </div>
     </div>
