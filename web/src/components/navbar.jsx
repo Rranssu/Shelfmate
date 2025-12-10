@@ -26,11 +26,11 @@ function Navbar() {
           <FaMoneyBill />
           <span className="label">Pricing</span>
         </a>
-        <a href="prtnrs" className="buttons partnersB" onClick={closeMobileMenu}>
+        <a href="#prtnrs" className="buttons partnersB" onClick={closeMobileMenu}>
           <IoBusinessSharp />
           <span className="label">Partners</span>
         </a>
-        <a href="abt" className="buttons aboutB" onClick={closeMobileMenu}>
+        <a href="#abt" className="buttons aboutB" onClick={closeMobileMenu}>
           <FaUser />
           <span className="label">About</span>
         </a>           
