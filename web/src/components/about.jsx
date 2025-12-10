@@ -11,17 +11,14 @@ function About() {
         </p>
         <div className="about-grid">
           <div className="about-card">
-            <img src="/icons/mission.png" alt="Our Mission Icon" className="about-logo" />
             <h3 className="about-name">Our Mission</h3>
             <p className="about-description">To make high-quality books accessible to everyone, fostering a global community of lifelong learners without any barriers or costs.</p>
           </div>
           <div className="about-card">
-            <img src="/icons/team.png" alt="Our Team Icon" className="about-logo" />
             <h3 className="about-name">Our Team</h3>
             <p className="about-description">A diverse group of book enthusiasts, developers, and educators working together to curate and deliver the best reading experiences.</p>
           </div>
           <div className="about-card">
-            <img src="/icons/vision.png" alt="Our Vision Icon" className="about-logo" />
             <h3 className="about-name">Our Vision</h3>
             <p className="about-description">A world where every person has the power of knowledge at their fingertips, inspiring creativity and change through the magic of books.</p>
           </div>

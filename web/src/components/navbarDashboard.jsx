@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaUserCog, FaMoon, FaSun, FaLock } from 'react-icons/fa';
+import { FaUserCog, FaMoon, FaSun } from 'react-icons/fa';
 import './styles/navbarDashboard.css';
 
 function NavbarDashboard({ isDarkMode, toggleDarkMode, onAdminLogin, libraryUid, libraryName }) {
@@ -27,12 +27,13 @@ function NavbarDashboard({ isDarkMode, toggleDarkMode, onAdminLogin, libraryUid,
     setMessage('');
     
     try {
+      // 1. Send the UID and the Input Password to backend
       const response = await fetch('http://localhost:5000/api/admin-login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           libraryUid: libraryUid,
-          password: password,
+          password: password, // This checks against the password stored in DB from Registration
         }),
       });
 
@@ -41,7 +42,7 @@ function NavbarDashboard({ isDarkMode, toggleDarkMode, onAdminLogin, libraryUid,
         setMessage('Login successful!');
         setTimeout(() => {
           handleCloseModal();
-          onAdminLogin(); 
+          onAdminLogin(); // Navigate to Admin Dashboard
         }, 1000);
       } else {
         setMessage(data.message || 'Incorrect Password');
@@ -62,6 +63,7 @@ function NavbarDashboard({ isDarkMode, toggleDarkMode, onAdminLogin, libraryUid,
           </button>
         </div>
         <div className="navbar-center">
+          {/* 2. Display the Dynamic Library Name */}
           <h1 className="school-name">{libraryName || 'My Library'}</h1>
         </div>
         <div className="navbar-right">
@@ -74,39 +76,29 @@ function NavbarDashboard({ isDarkMode, toggleDarkMode, onAdminLogin, libraryUid,
       {/* Admin Login Modal */}
       {isModalOpen && (
         <div className="modal-overlay">
-          {/* We apply the .dark class here if isDarkMode is true */}
-          <div className={`admin-modal-container ${isDarkMode ? 'dark' : ''}`}>
-            
-            <h2 className="admin-modal-title">Admin Login</h2>
-            <p className="admin-modal-description">
-              Please enter your password to continue.
+          <div className="modal-content">
+            <h2>Admin Login</h2>
+            <p style={{fontSize: '0.9rem', color: '#666', marginBottom: '15px'}}>
+              Enter the password you created during registration.
             </p>
-
             <form onSubmit={handleLoginSubmit}>
-              <div className="admin-input-group">
-                <FaLock className="input-icon" />
+              <div className="form-group">
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  placeholder="Admin Password"
-                  className="admin-input"
-                  autoFocus
+                  placeholder="Password"
+                  className="password-input"
                 />
               </div>
-
-              {message && (
-                <p className={`admin-message ${message.includes('successful') ? 'success' : 'error'}`}>
-                  {message}
-                </p>
-              )}
+              {message && <p className={`message ${message.includes('successful') ? 'success' : 'error'}`}>{message}</p>}
               
-              <div className="admin-modal-buttons">
-                <button type="submit" className="admin-submit-btn" disabled={loading}>
-                  {loading ? 'Verifying...' : 'Login'}
+              <div style={{display: 'flex', gap: '10px', marginTop: '15px'}}>
+                <button type="submit" className="login-submit-btn" disabled={loading}>
+                  {loading ? 'Checking...' : 'Login'}
                 </button>
-                <button type="button" className="admin-cancel-btn" onClick={handleCloseModal}>
+                <button type="button" className="cancel-btn" onClick={handleCloseModal}>
                   Cancel
                 </button>
               </div>
