@@ -10,7 +10,6 @@ function RegisterForm() {
     password: ''
   });
   const [message, setMessage] = useState('');
-  const [libraryUid, setLibraryUid] = useState(null);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -22,42 +21,33 @@ function RegisterForm() {
     try {
       const response = await fetch('http://localhost:5000/api/register', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          libraryName: formData.libraryName,
-          libraryType: formData.libraryType,
-          email: formData.email,
-          password: formData.password,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
       });
 
       const data = await response.json();
+      
       if (response.ok) {
         setMessage('Registration successful!');
-        setLibraryUid(data.library_uid);
         
-        // --- UPDATED NAVIGATION ---
+        // --- NAVIGATION LOGIC ---
         setTimeout(() => {
           navigate('/dashboard', { 
             state: { 
               libraryUid: data.library_uid, 
-              libraryName: formData.libraryName // Passing the name here
+              libraryName: formData.libraryName // We use the form input name here
             } 
           });
         }, 1000); 
-        // --------------------------
+        // ------------------------
 
         setFormData({ libraryName: '', libraryType: '', email: '', password: '' });
       } else {
         setMessage(data.message || 'Registration failed');
-        setLibraryUid(null);
       }
     } catch (error) {
       console.error('Error:', error);
       setMessage('Network error. Please try again.');
-      setLibraryUid(null);
     }
   };
 
@@ -65,12 +55,10 @@ function RegisterForm() {
     <>
       <h1 className="register-title">Register Your Library</h1>
       <p className="register-description">
-        Join Shelf Mate as a library partner. Provide your details to get started with our free book platform.
+        Join Shelf Mate as a library partner.
       </p>
-      {message && <p className="message">{message}</p>}
-      {libraryUid && (
-        <p className="uid-message">Your Library UID: <strong>{libraryUid}</strong></p>
-      )}
+      {message && <p className={`message ${message.includes('successful') ? 'success' : 'error'}`}>{message}</p>}
+      
       <form className="register-form" onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="libraryName">Library Name</label>
@@ -95,7 +83,7 @@ function RegisterForm() {
                 onChange={handleChange}
                 required
               />
-              School Library
+              School
             </label>
             <label>
               <input
@@ -106,7 +94,7 @@ function RegisterForm() {
                 onChange={handleChange}
                 required
               />
-              Normal Library
+              Normal
             </label>
           </div>
         </div>
