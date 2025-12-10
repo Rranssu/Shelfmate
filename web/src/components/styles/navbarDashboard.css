@@ -65,3 +65,260 @@
     padding: 5px 8px;
   }
 }
+
+/* =========================================
+   1. YOUR ORIGINAL NAVBAR STYLES
+   ========================================= */
+.dashboard-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #aa0022;
+  color: white;
+  padding: 12px 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.navbar-left, .navbar-right {
+  flex: 1;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.navbar-right {
+  justify-content: flex-end;
+}
+
+.navbar-center {
+  flex: 2;
+  text-align: center;
+}
+
+.admin-btn, .dark-mode-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.admin-btn:hover, .dark-mode-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.school-name {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin: 0;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 768px) {
+  .dashboard-navbar {
+    padding: 8px 12px;
+  }
+  .school-name {
+    font-size: 1rem;
+  }
+  .admin-btn, .dark-mode-btn {
+    font-size: 0.9rem;
+    padding: 5px 8px;
+  }
+}
+
+/* =========================================
+   2. NEW MODAL STYLES (MATCHING DASHBOARD UI)
+   ========================================= */
+
+/* Overlay covers the whole screen */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px); /* Adds a modern blur effect behind modal */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000; /* Higher than navbar */
+  animation: fadeIn 0.3s ease-in;
+}
+
+/* The Modal Box - Styled like your Dashboard Container */
+.admin-modal-container {
+  max-width: 400px; /* Smaller than dashboard for login */
+  width: 90%;
+  background-color: white;
+  padding: 30px;
+  /* border-radius: 0; Removed to match your '0' radius in dashboard */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  border-top: 4px solid #aa0022; /* Red top border */
+  position: relative;
+  text-align: center;
+  animation: slideUp 0.4s ease-out;
+}
+
+/* The "Tab" on top - Matches your dashboard ::before */
+.admin-modal-container::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 4px;
+  background-color: #aa0022;
+  border-radius: 0 0 4px 4px;
+}
+
+/* Modal Title */
+.admin-modal-title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #aa0022;
+  margin-bottom: 10px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Modal Description */
+.admin-modal-description {
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 25px;
+  color: #555;
+}
+
+/* Input Fields */
+.admin-input-group {
+  position: relative;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.input-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+}
+
+.admin-input {
+  width: 100%;
+  padding: 12px 12px 12px 35px; /* Space for icon */
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.admin-input:focus {
+  border-color: #aa0022;
+}
+
+/* Buttons Container */
+.admin-modal-buttons {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+/* Submit Button - Styled like dashboard-btn */
+.admin-submit-btn {
+  flex: 1;
+  background-color: #aa0022;
+  color: white;
+  border: none;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s, background-color 0.3s;
+}
+
+.admin-submit-btn:hover:not(:disabled) {
+  background-color: #cc0033;
+  transform: scale(1.05);
+}
+
+.admin-submit-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Cancel Button */
+.admin-cancel-btn {
+  flex: 1;
+  background-color: #666;
+  color: white;
+  border: none;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s;
+}
+
+.admin-cancel-btn:hover {
+  background-color: #444;
+}
+
+/* Status Messages */
+.admin-message {
+  margin-bottom: 15px;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+.admin-message.success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+.admin-message.error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+/* Dark Mode Overrides */
+.admin-modal-container.dark {
+  background-color: #444;
+  color: #f4f4f4;
+}
+
+.admin-modal-container.dark .admin-modal-title {
+  color: #ffd700; /* Gold */
+}
+
+.admin-modal-container.dark .admin-modal-description {
+  color: #ccc;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
