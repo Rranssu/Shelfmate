@@ -45,7 +45,7 @@ cd Shelfmate
 ```bash
 npm install        # or yarn install
 ```
-##✅ Usage
+## ✅ Usage
 
 Once the app is running, open your browser and navigate to 
 ```
@@ -63,7 +63,7 @@ View your shelf and reading history
 
 (If you have more features — list them here with examples.)
 
-##🛠️ Features (Planned / TODO)
+## 🛠️ Features (Planned / TODO)
 
  User authentication (signup / login)
 
@@ -77,7 +77,7 @@ View your shelf and reading history
 
 (Modify or expand this list based on your roadmap.)
 
-##🤝 Contributing
+## 🤝 Contributing
 
 Contributions are welcome! If you’d like to contribute, please follow these steps:
 
@@ -93,12 +93,12 @@ Open a Pull Request — describe what you changed and why
 
 Please ensure your code follows existing style and formatting conventions, and passes any existing tests.
 
-##📄 License
+## 📄 License
 
 This project is licensed under the MIT License — see the LICENSE
  file for details.
 
-##🙏 Acknowledgments / Credits
+## 🙏 Acknowledgments / Credits
 
 Thanks to everyone who contributed code, bug reports, suggestions.
 
