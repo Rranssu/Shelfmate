@@ -1,9 +1,7 @@
-// routes/coreRoutes.js
 const express = require('express');
 const CoreModel = require('../models/coreModel');
 const router = express.Router();
 
-// Log Entry
 router.post('/log-entry', (req, res) => {
   const { libraryUid, studentId } = req.body;
   CoreModel.checkStudent(studentId, libraryUid, (err, results) => {
@@ -18,7 +16,6 @@ router.post('/log-entry', (req, res) => {
   });
 });
 
-// Borrow Book
 router.post('/borrow-book', (req, res) => {
   const { libraryUid, studentId, searchQuery, dueDate } = req.body;
 
@@ -44,7 +41,6 @@ router.post('/borrow-book', (req, res) => {
   });
 });
 
-// Return Book
 router.post('/return-book', (req, res) => {
   const { borrowId } = req.body;
   CoreModel.findBorrowById(borrowId, (err, results) => {
@@ -63,7 +59,6 @@ router.post('/return-book', (req, res) => {
   });
 });
 
-// Get Borrowed Books (General)
 router.get('/borrowed-books', (req, res) => {
   const { libraryUid, studentId } = req.query;
   CoreModel.getBorrowedBooks(libraryUid, studentId, (err, results) => {
@@ -72,7 +67,6 @@ router.get('/borrowed-books', (req, res) => {
   });
 });
 
-// Get Student Info & Books (Specific UI)
 router.get('/student-books', (req, res) => {
   const { libraryUid, studentId } = req.query;
   CoreModel.checkStudent(studentId, libraryUid, (err, studentResults) => {

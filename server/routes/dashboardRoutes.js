@@ -1,4 +1,3 @@
-// routes/dashboardRoutes.js
 const express = require('express');
 const DashboardModel = require('../models/dashboardModel');
 const router = express.Router();

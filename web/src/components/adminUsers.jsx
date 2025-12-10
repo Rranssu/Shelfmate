@@ -3,12 +3,12 @@ import { FaPlus, FaSort, FaEdit, FaTrash, FaIdBadge } from 'react-icons/fa';
 import './styles/adminUsers.css';
 
 function AdminUsers({ libraryUid }) {
-  const [users, setUsers] = useState([]); // Keeping variable name "users" to minimize changes
+  const [users, setUsers] = useState([]);
   const [sortBy, setSortBy] = useState('name');
   const [showAddModal, setShowAddModal] = useState(false);
   
   const [editingUser, setEditingUser] = useState(null);
-  // Changed "email" to "student_id" in the state object
+
   const [newUser, setNewUser] = useState({ name: '', student_id: '' });
   
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -24,11 +24,10 @@ function AdminUsers({ libraryUid }) {
 
   const fetchUsers = async () => {
     try {
-      // UPDATED: Fetch from students endpoint
       const response = await fetch(`http://localhost:5000/api/students?libraryUid=${libraryUid}`);
       const data = await response.json();
       if (response.ok) {
-        setUsers(data.users); // Backend now returns students as "users"
+        setUsers(data.users);
       } else {
         setMessage(data.message || 'Failed to fetch students');
       }
@@ -41,7 +40,6 @@ function AdminUsers({ libraryUid }) {
 
   const sortedUsers = [...users].sort((a, b) => {
     if (sortBy === 'name') return a.name.localeCompare(b.name);
-    // UPDATED: Sort by student_id
     if (sortBy === 'student_id') return a.student_id.localeCompare(b.student_id);
     return 0;
   });
@@ -50,7 +48,6 @@ function AdminUsers({ libraryUid }) {
     if (!newUser.name || !newUser.student_id) return;
     
     try {
-      // UPDATED: Post to students
       const response = await fetch('http://localhost:5000/api/students', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -73,7 +70,6 @@ function AdminUsers({ libraryUid }) {
 
   const handleEditUser = (user) => {
     setEditingUser(user);
-    // UPDATED: Set student_id
     setNewUser({ name: user.name, student_id: user.student_id });
   };
 
@@ -81,7 +77,6 @@ function AdminUsers({ libraryUid }) {
     if (!editingUser) return;
     
     try {
-      // UPDATED: Put to students
       const response = await fetch(`http://localhost:5000/api/students/${editingUser.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -111,7 +106,6 @@ function AdminUsers({ libraryUid }) {
     if (!userToDelete) return;
     
     try {
-      // UPDATED: Delete from students
       const response = await fetch(`http://localhost:5000/api/students/${userToDelete.id}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
@@ -142,7 +136,7 @@ function AdminUsers({ libraryUid }) {
   return (
     <div className="admin-users-wrapper">
       <div className="admin-users-container">
-        <h2>Student Management</h2> {/* Changed Title */}
+        <h2>Student Management</h2>
         {message && <p className="message">{message}</p>}
         
         <div className="users-controls">
@@ -167,7 +161,6 @@ function AdminUsers({ libraryUid }) {
               value={newUser.name}
               onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
             />
-            {/* UPDATED: Input for Student ID */}
             <input
               type="text"
               placeholder="School ID Number"
@@ -184,7 +177,6 @@ function AdminUsers({ libraryUid }) {
             <div key={user.id} className="user-item">
               <div className="user-details">
                 <p><strong>{user.name}</strong></p>
-                {/* UPDATED: Display Student ID */}
                 <p style={{ display: 'flex', alignItems: 'center', gap: '5px', color: '#666' }}>
                     <FaIdBadge /> {user.student_id}
                 </p>
@@ -211,7 +203,6 @@ function AdminUsers({ libraryUid }) {
                 value={newUser.name}
                 onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
               />
-              {/* UPDATED: Input for Student ID */}
               <input
                 type="text"
                 placeholder="School ID Number"

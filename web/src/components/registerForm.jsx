@@ -30,16 +30,14 @@ function RegisterForm() {
       if (response.ok) {
         setMessage('Registration successful!');
         
-        // --- NAVIGATION LOGIC ---
         setTimeout(() => {
           navigate('/dashboard', { 
             state: { 
               libraryUid: data.library_uid, 
-              libraryName: formData.libraryName // We use the form input name here
+              libraryName: formData.libraryName 
             } 
           });
         }, 1000); 
-        // ------------------------
 
         setFormData({ libraryName: '', libraryType: '', email: '', password: '' });
       } else {

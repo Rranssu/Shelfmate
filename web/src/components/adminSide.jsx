@@ -22,7 +22,7 @@ export default function AdminSide({ libraryUid, libraryName }) {
         <div style={{ marginTop: '20px', borderTop: '1px solid rgba(255,255,255,0.1)' }}></div>
         <Link 
           to="/dashboard" 
-          state={{ libraryUid, libraryName }} // IMPORTANT: Pass state back so Dashboard knows who you are
+          state={{ libraryUid, libraryName }}
           className="menu-item"
         >
           <FiArrowLeft className="menu-icon" /> Back to Library

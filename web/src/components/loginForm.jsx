@@ -30,17 +30,14 @@ function LoginForm() {
       if (response.ok) {
         setMessage('Login successful!');
         
-        // --- NAVIGATION LOGIC ---
         setTimeout(() => {
           navigate('/dashboard', { 
             state: { 
-              // The backend sends back library_uid and library_name
               libraryUid: data.library_uid, 
               libraryName: data.library_name 
             } 
           });
         }, 1000); 
-        // ------------------------
 
         setFormData({ email: '', password: '' });
       } else {

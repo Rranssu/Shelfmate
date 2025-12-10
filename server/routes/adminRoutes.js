@@ -1,9 +1,7 @@
-// routes/adminRoutes.js
 const express = require('express');
 const AdminModel = require('../models/adminModel');
 const router = express.Router();
 
-// --- Students ---
 router.get('/students', (req, res) => {
   AdminModel.getAllStudents(req.query.libraryUid, (err, results) => {
     if (err) return res.status(500).json({ message: 'Database error' });
@@ -33,7 +31,6 @@ router.delete('/students/:id', (req, res) => {
   });
 });
 
-// --- Books ---
 router.get('/books', (req, res) => {
   AdminModel.getAllBooks(req.query.libraryUid, (err, results) => {
     if (err) return res.status(500).json({ message: 'Database error' });

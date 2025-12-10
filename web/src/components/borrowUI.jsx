@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './styles/borrowUI.css';
 
-function BorrowUI({ onBack, libraryUid }) {  // Added libraryUid prop
+function BorrowUI({ onBack, libraryUid }) { 
   const [studentId, setStudentId] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [dueDate, setDueDate] = useState('');
@@ -40,7 +40,6 @@ function BorrowUI({ onBack, libraryUid }) {  // Added libraryUid prop
         setStudentId('');
         setSearchQuery('');
         setDueDate('');
-        // Optionally, call onBack() or stay on page
       } else {
         setMessage(data.message || 'Failed to borrow book');
       }

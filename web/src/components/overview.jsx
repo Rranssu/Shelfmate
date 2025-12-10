@@ -35,7 +35,6 @@ function Overview({ libraryUid }) {
         <div className="stat-item">
           <FaBookOpen className="stat-icon" />
           <div>
-            {/* Displaying Books Borrowed TODAY */}
             <p className="stat-number">{stats.booksBorrowedToday}</p>
             <p className="stat-label">Borrowed Today</p>
           </div>
@@ -43,7 +42,6 @@ function Overview({ libraryUid }) {
         <div className="stat-item">
           <FaClipboardList className="stat-icon" />
           <div>
-            {/* Displaying Entry Logs TODAY */}
             <p className="stat-number">{stats.entriesToday}</p>
             <p className="stat-label">Entries Today</p>
           </div>
@@ -51,7 +49,6 @@ function Overview({ libraryUid }) {
         <div className="stat-item">
           <FaClock className="stat-icon" />
           <div>
-            {/* Displaying Total Active Loans */}
             <p className="stat-number">{stats.toBeReturned}</p>
             <p className="stat-label">To Be Returned</p>
           </div>

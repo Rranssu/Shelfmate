@@ -7,7 +7,6 @@ function ReturnUI({ onBack, onSeeBorrowed }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (studentId.trim()) {
-      // Pass the ID up to the Dashboard
       onSeeBorrowed(studentId);
     }
   };

@@ -16,7 +16,6 @@ function ReturnListUI({ studentId, onBack, libraryUid }) {
 
     const fetchData = async () => {
       try {
-        // Calls the endpoint specifically designed for this list
         const response = await fetch(`http://localhost:5000/api/student-books?libraryUid=${libraryUid}&studentId=${studentId}`);
         const data = await response.json();
         
@@ -52,7 +51,6 @@ function ReturnListUI({ studentId, onBack, libraryUid }) {
       const data = await response.json();
       if (response.ok) {
         setMessage(data.message);
-        // Remove the returned book from the local list immediately
         setBorrowedBooks((prevBooks) => prevBooks.filter(book => book.id !== borrowId));
       } else {
         setMessage(data.message || 'Failed to return book');

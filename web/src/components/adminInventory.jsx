@@ -54,7 +54,7 @@ function AdminInventory({ libraryUid }) {
         setMessage('Book added successfully');
         setNewBook({ title: '', author: '' });
         setShowAddModal(false);
-        fetchBooks(); // Refresh list
+        fetchBooks();
       } else {
         setMessage(data.message || 'Failed to add book');
       }
@@ -83,7 +83,7 @@ function AdminInventory({ libraryUid }) {
         setMessage('Book updated successfully');
         setEditingBook(null);
         setNewBook({ title: '', author: '' });
-        fetchBooks(); // Refresh list
+        fetchBooks();
       } else {
         setMessage(data.message || 'Failed to update book');
       }
@@ -112,7 +112,7 @@ function AdminInventory({ libraryUid }) {
         setMessage('Book deleted successfully');
         setShowDeleteModal(false);
         setBookToDelete(null);
-        fetchBooks(); // Refresh list
+        fetchBooks();
       } else {
         setMessage(data.message || 'Failed to delete book');
       }

@@ -9,7 +9,6 @@ function AdminDashboard({ libraryUid }) {
         <main className="admin-dashboard">
             <div className="dashboard-content">
                 <div className="dashboard-grid">
-                    {/* 2. Pass prop down */}
                     <Overview libraryUid={libraryUid} />
                     <RecentEntry libraryUid={libraryUid} />
                     <InventorySummary libraryUid={libraryUid} />

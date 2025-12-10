@@ -53,7 +53,6 @@ function LogUI({ onBack, libraryUid }) {
         <h2 className="log-title">Log Entry</h2>
         <p className="log-description">Enter the Student ID to log a new entry.</p>
         
-        {/* Dynamic styling for message based on success/error */}
         {message && (
           <p className={`message ${messageType === 'error' ? 'error-msg' : 'success-msg'}`}>
             {message}
@@ -70,7 +69,7 @@ function LogUI({ onBack, libraryUid }) {
               value={schoolId}
               onChange={(e) => {
                 setSchoolId(e.target.value);
-                setMessage(''); // Clear message when user starts typing again
+                setMessage('');
               }}
               required
               placeholder="Enter School ID"

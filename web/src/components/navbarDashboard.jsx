@@ -71,10 +71,8 @@ function NavbarDashboard({ isDarkMode, toggleDarkMode, onAdminLogin, libraryUid,
         </div>
       </nav>
 
-      {/* Admin Login Modal */}
       {isModalOpen && (
         <div className="modal-overlay">
-          {/* We apply the .dark class here if isDarkMode is true */}
           <div className={`admin-modal-container ${isDarkMode ? 'dark' : ''}`}>
             
             <h2 className="admin-modal-title">Admin Login</h2>

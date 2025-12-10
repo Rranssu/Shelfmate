@@ -237,7 +237,6 @@
   border: 1px solid #f5c6cb;
 }
 
-/* Dark Mode Overrides */
 .admin-modal-container.dark {
   background-color: #444;
   color: #f4f4f4;
@@ -251,7 +250,6 @@
   color: #ccc;
 }
 
-/* Animations */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }

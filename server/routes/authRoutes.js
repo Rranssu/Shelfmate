@@ -1,11 +1,8 @@
-// routes/authRoutes.js
 const express = require('express');
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
 const AuthModel = require('../models/authModel');
 const router = express.Router();
-
-// Register
 router.post('/register', async (req, res) => {
   const { libraryName, libraryType, email, password } = req.body;
   try {
@@ -27,7 +24,6 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// Login
 router.post('/login', (req, res) => {
   const { email, password } = req.body;
   AuthModel.findUserByEmail(email, async (err, results) => {
@@ -47,7 +43,6 @@ router.post('/login', (req, res) => {
   });
 });
 
-// Admin Login
 router.post('/admin-login', (req, res) => {
   const { password, libraryUid } = req.body;
   AuthModel.findAdminByUid(libraryUid, async (err, results) => {

@@ -6,14 +6,13 @@ import DashboardUI from '../components/dashboardUI.jsx';
 import LogUI from '../components/logUI.jsx';
 import BorrowUI from '../components/borrowUI.jsx';
 import ReturnUI from '../components/returnUI.jsx';
-import ReturnListUI from '../components/returnListUI.jsx'; // Import the new component
+import ReturnListUI from '../components/returnListUI.jsx';
 import './styles/dashboard.css';
 
 function Dashboard() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [currentView, setCurrentView] = useState('dashboard');
   
-  // NEW: State to hold the student ID passed from ReturnUI
   const [selectedStudentId, setSelectedStudentId] = useState(null); 
   
   const location = useLocation();
@@ -32,19 +31,15 @@ function Dashboard() {
   const handleAdminLogin = () => {
     navigate('/admin', { state: { libraryUid, libraryName } });
   };
-
-  // --- Handlers ---
   
   const handleLogEntry = () => setCurrentView('log');
   const handleBorrow = () => setCurrentView('borrow');
   
-  // 1. Shows the Search Form
   const handleReturn = () => {
     setCurrentView('return');
-    setSelectedStudentId(null); // Reset ID
+    setSelectedStudentId(null); 
   };
 
-  // 2. Shows the List (Called from ReturnUI)
   const handleSeeBorrowed = (studentId) => {
     setSelectedStudentId(studentId);
     setCurrentView('returnList');
@@ -52,7 +47,7 @@ function Dashboard() {
 
   const handleBackToDashboard = () => setCurrentView('dashboard');
   
-  // Special back button for the List view (goes back to Search, not Dashboard)
+
   const handleBackToReturnSearch = () => setCurrentView('return');
 
   if (!libraryUid) return null;
@@ -87,16 +82,15 @@ function Dashboard() {
       {currentView === 'return' && (
         <ReturnUI 
           onBack={handleBackToDashboard} 
-          onSeeBorrowed={handleSeeBorrowed} // Passes the function to catch the ID
+          onSeeBorrowed={handleSeeBorrowed} 
         />
       )}
 
-      {/* 2. The List View */}
       {currentView === 'returnList' && (
         <ReturnListUI 
-          onBack={handleBackToReturnSearch} // Goes back to search input
-          studentId={selectedStudentId}     // Passes the ID down
-          libraryUid={libraryUid}           // Passes the Library UID
+          onBack={handleBackToReturnSearch} 
+          studentId={selectedStudentId}     
+          libraryUid={libraryUid}           
         />
       )}
     </div>
