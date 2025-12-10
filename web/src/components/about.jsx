@@ -23,7 +23,6 @@ function About() {
             <p className="about-description">A world where every person has the power of knowledge at their fingertips, inspiring creativity and change through the magic of books.</p>
           </div>
         </div>
-        <button className="about-btn">Contact Us</button>
       </div>
     </section>
   );
