@@ -1,71 +1,3 @@
-.dashboard-navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #aa0022;
-  color: white;
-  padding: 12px 15px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-}
-
-.navbar-left, .navbar-right {
-  flex: 1;
-  display: flex;
-  justify-content: flex-start;
-}
-
-.navbar-right {
-  justify-content: flex-end;
-}
-
-.navbar-center {
-  flex: 2;
-  text-align: center;
-}
-
-.admin-btn, .dark-mode-btn {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 1rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 10px;
-  border-radius: 4px;
-  transition: background-color 0.3s ease;
-}
-
-.admin-btn:hover, .dark-mode-btn:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.school-name {
-  font-size: 1.3rem;
-  font-weight: bold;
-  margin: 0;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-}
-
-@media (max-width: 768px) {
-  .dashboard-navbar {
-    padding: 8px 12px;
-  }
-
-  .school-name {
-    font-size: 1rem;
-  }
-
-  .admin-btn, .dark-mode-btn {
-    font-size: 0.9rem;
-    padding: 5px 8px;
-  }
-}
-
 /* =========================================
    1. YOUR ORIGINAL NAVBAR STYLES
    ========================================= */
@@ -147,29 +79,30 @@
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px); /* Adds a modern blur effect behind modal */
+  backdrop-filter: blur(4px);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 2000; /* Higher than navbar */
+  z-index: 2000;
   animation: fadeIn 0.3s ease-in;
 }
 
 /* The Modal Box - Styled like your Dashboard Container */
 .admin-modal-container {
-  max-width: 400px; /* Smaller than dashboard for login */
+  max-width: 400px;
   width: 90%;
   background-color: white;
   padding: 30px;
-  /* border-radius: 0; Removed to match your '0' radius in dashboard */
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-  border-top: 4px solid #aa0022; /* Red top border */
+  border-top: 4px solid #aa0022;
   position: relative;
   text-align: center;
   animation: slideUp 0.4s ease-out;
+  /* Ensure content doesn't spill out */
+  box-sizing: border-box; 
 }
 
-/* The "Tab" on top - Matches your dashboard ::before */
+/* The "Tab" on top */
 .admin-modal-container::before {
   content: '';
   position: absolute;
@@ -204,6 +137,7 @@
   position: relative;
   margin-bottom: 20px;
   text-align: left;
+  width: 100%; /* Ensure group takes full width */
 }
 
 .input-icon {
@@ -212,10 +146,13 @@
   top: 50%;
   transform: translateY(-50%);
   color: #888;
+  z-index: 10; /* Ensure icon is above input background */
 }
 
+/* --- FIXED: Added box-sizing so padding doesn't increase width --- */
 .admin-input {
   width: 100%;
+  box-sizing: border-box; /* This fixes the overflow issue */
   padding: 12px 12px 12px 35px; /* Space for icon */
   font-size: 1rem;
   border: 1px solid #ddd;
@@ -235,7 +172,7 @@
   margin-top: 20px;
 }
 
-/* Submit Button - Styled like dashboard-btn */
+/* Submit Button */
 .admin-submit-btn {
   flex: 1;
   background-color: #aa0022;
@@ -286,6 +223,8 @@
   padding: 10px;
   border-radius: 4px;
   font-size: 0.9rem;
+  width: 100%; /* Ensure message stays inside */
+  box-sizing: border-box; /* Prevent message overflow */
 }
 .admin-message.success {
   background-color: #d4edda;
