@@ -194,24 +194,35 @@ app.get('/api/borrowed-books', (req, res) => {
   });
 });
 
-// Get Borrowed Books (Detailed List for ReturnListUI)
+// Get Student Info and Borrowed Books (Detailed List for ReturnListUI)
 app.get('/api/student-books', (req, res) => {
   const { libraryUid, studentId } = req.query;
   
+  // 1. Get student info
   const studentQuery = 'SELECT name FROM students WHERE student_id = ? AND library_uid = ?';
+  
   db.execute(studentQuery, [studentId, libraryUid], (err, studentResults) => {
-    if (err) return res.status(500).json({ message: 'Database error' });
+    if (err) {
+      console.error("Error fetching student:", err); // Log the specific error to console
+      return res.status(500).json({ message: 'Database error fetching student' });
+    }
     
     const studentName = studentResults.length > 0 ? studentResults[0].name : 'Unknown';
     
+    // 2. Get borrowed books
+    // FIX: Changed 'b.id' to 'br.id' to match the table alias 'borrows br'
     const booksQuery = `
-      SELECT b.id as borrow_id, bk.title, bk.author, br.due_date, br.borrowed_at
+      SELECT br.id as borrow_id, bk.title, bk.author, br.due_date, br.borrowed_at
       FROM borrows br
       JOIN books bk ON br.book_id = bk.id
       WHERE br.library_uid = ? AND br.student_id = ? AND br.returned = FALSE
     `;
+    
     db.execute(booksQuery, [libraryUid, studentId], (err, booksResults) => {
-      if (err) return res.status(500).json({ message: 'Database error' });
+      if (err) {
+        console.error("Error fetching books:", err); // Log the specific error to console
+        return res.status(500).json({ message: 'Database error fetching books' });
+      }
       
       res.json({
         studentName,
