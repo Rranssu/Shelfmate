@@ -54,7 +54,7 @@ export default function AdminSide({ libraryUid, libraryName }) {
           <FaRegAddressBook className="menu-icon" /> Entry Logbook
         </Link>
 
-        <Link to="/" className="menu-item logout">
+        <Link to="/register" className="menu-item logout">
           <FiLogOut className="menu-icon" /> Logout
         </Link>
       </div>
