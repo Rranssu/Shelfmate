@@ -125,7 +125,7 @@ app.post('/api/admin-login', (req, res) => {
 // 2. DASHBOARD OPERATIONS
 // ==========================================
 
-// Log Student Entry (Strict Mode: Student must exist)
+// Log Student Entry (STRICT: Student Must Exist)
 app.post('/api/log-entry', (req, res) => {
   const { libraryUid, studentId } = req.body;
   
@@ -137,16 +137,16 @@ app.post('/api/log-entry', (req, res) => {
       return res.status(500).json({ message: 'Database error checking student' });
     }
     
-    // 2. Reject if not found
+    // 2. REJECT if not found
     if (results.length === 0) {
       return res.status(404).json({ 
-        message: 'Student ID not registered. Please register in Admin panel.' 
+        message: 'Student ID not registered. Please add student in Admin panel.' 
       });
     }
     
     const studentName = results[0].name;
 
-    // 3. Log entry
+    // 3. Log entry (Only if student exists)
     const logQuery = 'INSERT INTO logs (library_uid, student_id) VALUES (?, ?)';
     db.execute(logQuery, [libraryUid, studentId], (err) => {
       if (err) {
@@ -158,10 +158,11 @@ app.post('/api/log-entry', (req, res) => {
   });
 });
 
-// Borrow Book
+// Borrow Book (STRICT: Student Must Exist)
 app.post('/api/borrow-book', (req, res) => {
   const { libraryUid, studentId, searchQuery, dueDate } = req.body;
   
+  // 1. Check Book
   const bookQuery = 'SELECT * FROM books WHERE library_uid = ? AND available = TRUE AND (title LIKE ? OR author LIKE ?)';
   const searchPattern = `%${searchQuery}%`;
   
@@ -171,16 +172,24 @@ app.post('/api/borrow-book', (req, res) => {
     
     const book = bookResults[0];
     
-    // Note: Borrowing currently allows auto-creation of students (Upsert). 
-    // If you want strict borrowing, copy the logic from log-entry.
-    const studentQuery = 'INSERT INTO students (student_id, library_uid) VALUES (?, ?) ON DUPLICATE KEY UPDATE id=id';
-    db.execute(studentQuery, [studentId, libraryUid], (err) => {
-      if (err) return res.status(500).json({ message: 'Database error' });
+    // 2. Check Student (STRICT CHECK)
+    const checkStudentQuery = 'SELECT id, name FROM students WHERE student_id = ? AND library_uid = ?';
+    db.execute(checkStudentQuery, [studentId, libraryUid], (err, studentResults) => {
+      if (err) return res.status(500).json({ message: 'Database error checking student' });
       
+      // REJECT if student not found
+      if (studentResults.length === 0) {
+        return res.status(404).json({ 
+          message: 'Student ID not registered. Cannot borrow book.' 
+        });
+      }
+
+      // 3. Create Borrow Record
       const borrowQuery = 'INSERT INTO borrows (student_id, book_id, library_uid, due_date) VALUES (?, ?, ?, ?)';
       db.execute(borrowQuery, [studentId, book.id, libraryUid, dueDate], (err) => {
         if (err) return res.status(500).json({ message: 'Database error' });
         
+        // 4. Mark Book Unavailable
         const updateBookQuery = 'UPDATE books SET available = FALSE WHERE id = ?';
         db.execute(updateBookQuery, [book.id], (err) => {
           if (err) return res.status(500).json({ message: 'Database error' });
@@ -219,7 +228,7 @@ app.post('/api/return-book', (req, res) => {
 app.get('/api/borrowed-books', (req, res) => {
   const { libraryUid, studentId } = req.query;
   const query = `
-    SELECT b.id as borrow_id, bk.title, bk.author, br.borrowed_at, br.due_date
+    SELECT br.id as borrow_id, bk.title, bk.author, br.borrowed_at, br.due_date
     FROM borrows br
     JOIN books bk ON br.book_id = bk.id
     WHERE br.library_uid = ? AND br.student_id = ? AND br.returned = FALSE
