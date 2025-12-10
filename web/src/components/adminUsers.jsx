@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { FaPlus, FaSort, FaEdit, FaTrash } from 'react-icons/fa';
+import { FaPlus, FaSort, FaEdit, FaTrash, FaIdBadge } from 'react-icons/fa';
 import './styles/adminUsers.css';
 
 function AdminUsers({ libraryUid }) {
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState([]); // Keeping variable name "users" to minimize changes
   const [sortBy, setSortBy] = useState('name');
   const [showAddModal, setShowAddModal] = useState(false);
+  
   const [editingUser, setEditingUser] = useState(null);
-  const [newUser, setNewUser] = useState({ name: '', email: '' });
+  // Changed "email" to "student_id" in the state object
+  const [newUser, setNewUser] = useState({ name: '', student_id: '' });
+  
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
+  
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
 
@@ -20,12 +24,13 @@ function AdminUsers({ libraryUid }) {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/api/users?libraryUid=${libraryUid}`);
+      // UPDATED: Fetch from students endpoint
+      const response = await fetch(`http://localhost:5000/api/students?libraryUid=${libraryUid}`);
       const data = await response.json();
       if (response.ok) {
-        setUsers(data.users);
+        setUsers(data.users); // Backend now returns students as "users"
       } else {
-        setMessage(data.message || 'Failed to fetch users');
+        setMessage(data.message || 'Failed to fetch students');
       }
     } catch (error) {
       console.error('Error:', error);
@@ -36,27 +41,29 @@ function AdminUsers({ libraryUid }) {
 
   const sortedUsers = [...users].sort((a, b) => {
     if (sortBy === 'name') return a.name.localeCompare(b.name);
-    if (sortBy === 'email') return a.email.localeCompare(b.email);
+    // UPDATED: Sort by student_id
+    if (sortBy === 'student_id') return a.student_id.localeCompare(b.student_id);
     return 0;
   });
 
   const handleAddUser = async () => {
-    if (!newUser.name || !newUser.email) return;
+    if (!newUser.name || !newUser.student_id) return;
     
     try {
-      const response = await fetch('http://localhost:5000/api/users', {
+      // UPDATED: Post to students
+      const response = await fetch('http://localhost:5000/api/students', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...newUser, libraryUid }),
       });
       const data = await response.json();
       if (response.ok) {
-        setMessage('User added successfully');
-        setNewUser({ name: '', email: '' });
+        setMessage('Student added successfully');
+        setNewUser({ name: '', student_id: '' });
         setShowAddModal(false);
-        fetchUsers(); // Refresh list
+        fetchUsers();
       } else {
-        setMessage(data.message || 'Failed to add user');
+        setMessage(data.message || 'Failed to add student');
       }
     } catch (error) {
       console.error('Error:', error);
@@ -66,26 +73,28 @@ function AdminUsers({ libraryUid }) {
 
   const handleEditUser = (user) => {
     setEditingUser(user);
-    setNewUser({ name: user.name, email: user.email });
+    // UPDATED: Set student_id
+    setNewUser({ name: user.name, student_id: user.student_id });
   };
 
   const handleUpdateUser = async () => {
     if (!editingUser) return;
     
     try {
-      const response = await fetch(`http://localhost:5000/api/users/${editingUser.id}`, {
+      // UPDATED: Put to students
+      const response = await fetch(`http://localhost:5000/api/students/${editingUser.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...newUser, libraryUid }),
       });
       const data = await response.json();
       if (response.ok) {
-        setMessage('User updated successfully');
+        setMessage('Student updated successfully');
         setEditingUser(null);
-        setNewUser({ name: '', email: '' });
-        fetchUsers(); // Refresh list
+        setNewUser({ name: '', student_id: '' });
+        fetchUsers();
       } else {
-        setMessage(data.message || 'Failed to update user');
+        setMessage(data.message || 'Failed to update student');
       }
     } catch (error) {
       console.error('Error:', error);
@@ -102,19 +111,20 @@ function AdminUsers({ libraryUid }) {
     if (!userToDelete) return;
     
     try {
-      const response = await fetch(`http://localhost:5000/api/users/${userToDelete.id}`, {
+      // UPDATED: Delete from students
+      const response = await fetch(`http://localhost:5000/api/students/${userToDelete.id}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ libraryUid }),
       });
       const data = await response.json();
       if (response.ok) {
-        setMessage('User deleted successfully');
+        setMessage('Student deleted successfully');
         setShowDeleteModal(false);
         setUserToDelete(null);
-        fetchUsers(); // Refresh list
+        fetchUsers();
       } else {
-        setMessage(data.message || 'Failed to delete user');
+        setMessage(data.message || 'Failed to delete student');
       }
     } catch (error) {
       console.error('Error:', error);
@@ -127,40 +137,42 @@ function AdminUsers({ libraryUid }) {
     setUserToDelete(null);
   };
 
-  if (loading) return <p>Loading users...</p>;
+  if (loading) return <p>Loading students...</p>;
 
   return (
     <div className="admin-users-wrapper">
       <div className="admin-users-container">
-        <h2>Users Management</h2>
+        <h2>Student Management</h2> {/* Changed Title */}
         {message && <p className="message">{message}</p>}
+        
         <div className="users-controls">
           <button className="add-btn" onClick={() => setShowAddModal(true)}>
-            <FaPlus /> Add User
+            <FaPlus /> Add Student
           </button>
           <div className="sort-controls">
             <FaSort />
             <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
               <option value="name">Sort by Name</option>
-              <option value="email">Sort by Email</option>
+              <option value="student_id">Sort by ID</option>
             </select>
           </div>
         </div>
 
         {editingUser && (
           <div className="user-form">
-            <h3>Edit User</h3>
+            <h3>Edit Student</h3>
             <input
               type="text"
-              placeholder="Name"
+              placeholder="Student Name"
               value={newUser.name}
               onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
             />
+            {/* UPDATED: Input for Student ID */}
             <input
-              type="email"
-              placeholder="Email"
-              value={newUser.email}
-              onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+              type="text"
+              placeholder="School ID Number"
+              value={newUser.student_id}
+              onChange={(e) => setNewUser({ ...newUser, student_id: e.target.value })}
             />
             <button onClick={handleUpdateUser}>Update</button>
             <button onClick={() => setEditingUser(null)}>Cancel</button>
@@ -172,7 +184,10 @@ function AdminUsers({ libraryUid }) {
             <div key={user.id} className="user-item">
               <div className="user-details">
                 <p><strong>{user.name}</strong></p>
-                <p>{user.email}</p>
+                {/* UPDATED: Display Student ID */}
+                <p style={{ display: 'flex', alignItems: 'center', gap: '5px', color: '#666' }}>
+                    <FaIdBadge /> {user.student_id}
+                </p>
               </div>
               <div className="user-actions">
                 <button className="edit-btn" onClick={() => handleEditUser(user)}>
@@ -189,18 +204,19 @@ function AdminUsers({ libraryUid }) {
         {showAddModal && (
           <div className="add-modal-overlay" onClick={() => setShowAddModal(false)}>
             <div className="add-modal" onClick={(e) => e.stopPropagation()}>
-              <h3>Add New User</h3>
+              <h3>Add New Student</h3>
               <input
                 type="text"
-                placeholder="Name"
+                placeholder="Student Name"
                 value={newUser.name}
                 onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
               />
+              {/* UPDATED: Input for Student ID */}
               <input
-                type="email"
-                placeholder="Email"
-                value={newUser.email}
-                onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                type="text"
+                placeholder="School ID Number"
+                value={newUser.student_id}
+                onChange={(e) => setNewUser({ ...newUser, student_id: e.target.value })}
               />
               <div className="modal-actions">
                 <button onClick={handleAddUser}>Add</button>
