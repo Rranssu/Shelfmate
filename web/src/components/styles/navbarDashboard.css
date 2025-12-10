@@ -4,21 +4,20 @@
   align-items: center;
   background-color: #aa0022;
   color: white;
-  padding: 12px 20px;
+  padding: 12px 15px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
   z-index: 1000;
-  height: 60px;
-  box-sizing: border-box;
 }
 
-.navbar-desktop-left, .navbar-desktop-right {
+.navbar-left, .navbar-right {
   flex: 1;
   display: flex;
+  justify-content: flex-start;
 }
 
-.navbar-desktop-right {
+.navbar-right {
   justify-content: flex-end;
 }
 
@@ -27,101 +26,120 @@
   text-align: center;
 }
 
+.admin-btn, .dark-mode-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.admin-btn:hover, .dark-mode-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
 .school-name {
   font-size: 1.3rem;
   font-weight: bold;
   margin: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 }
 
-.admin-btn, .dark-mode-btn {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: white;
-  font-size: 0.95rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 15px;
-  border-radius: 4px;
-  transition: all 0.3s ease;
-}
-
-.admin-btn:hover, .dark-mode-btn:hover {
-  background-color: rgba(255, 255, 255, 0.25);
-  transform: translateY(-1px);
-}
-
-.mobile-menu-icon {
-  display: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: white;
-}
-
-.mobile-nav-menu {
-  display: flex;
-  flex-direction: column;
-  position: absolute;
-  top: 60px;
-  left: 0;
-  width: 100%;
-  background-color: #aa0022;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-  transform: translateY(-150%);
-  transition: transform 0.3s ease-in-out;
-  z-index: 999;
-}
-
-.mobile-nav-menu.active {
-  transform: translateY(0);
-}
-
-.mobile-nav-item {
-  background: none;
-  border: none;
-  border-top: 1px solid rgba(255,255,255,0.1);
-  color: white;
-  padding: 15px;
-  font-size: 1.1rem;
-  text-align: center;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-}
-
-.mobile-nav-item:hover {
-  background-color: #88001b;
-}
-
 @media (max-width: 768px) {
-  .navbar-desktop-left, .navbar-desktop-right {
-    display: none;
-  }
-
-  .mobile-menu-icon {
-    display: block;
-    position: absolute;
-    right: 20px;
-  }
-
-  .navbar-center {
-    text-align: left;
-    flex: 1;
+  .dashboard-navbar {
+    padding: 8px 12px;
   }
 
   .school-name {
-    font-size: 1.1rem;
+    font-size: 1rem;
+  }
+
+  .admin-btn, .dark-mode-btn {
+    font-size: 0.9rem;
+    padding: 5px 8px;
   }
 }
 
+/* =========================================
+   1. YOUR ORIGINAL NAVBAR STYLES
+   ========================================= */
+.dashboard-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #aa0022;
+  color: white;
+  padding: 12px 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.navbar-left, .navbar-right {
+  flex: 1;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.navbar-right {
+  justify-content: flex-end;
+}
+
+.navbar-center {
+  flex: 2;
+  text-align: center;
+}
+
+.admin-btn, .dark-mode-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.admin-btn:hover, .dark-mode-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.school-name {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin: 0;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 768px) {
+  .dashboard-navbar {
+    padding: 8px 12px;
+  }
+  .school-name {
+    font-size: 1rem;
+  }
+  .admin-btn, .dark-mode-btn {
+    font-size: 0.9rem;
+    padding: 5px 8px;
+  }
+}
+
+/* =========================================
+   2. NEW MODAL STYLES (MATCHING DASHBOARD UI)
+   ========================================= */
+
+/* Overlay covers the whole screen */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -129,27 +147,29 @@
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px); /* Adds a modern blur effect behind modal */
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 2000;
+  z-index: 2000; /* Higher than navbar */
   animation: fadeIn 0.3s ease-in;
 }
 
+/* The Modal Box - Styled like your Dashboard Container */
 .admin-modal-container {
-  max-width: 400px;
+  max-width: 400px; /* Smaller than dashboard for login */
   width: 90%;
   background-color: white;
   padding: 30px;
+  /* border-radius: 0; Removed to match your '0' radius in dashboard */
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-  border-top: 4px solid #aa0022;
+  border-top: 4px solid #aa0022; /* Red top border */
   position: relative;
   text-align: center;
   animation: slideUp 0.4s ease-out;
-  box-sizing: border-box; 
 }
 
+/* The "Tab" on top - Matches your dashboard ::before */
 .admin-modal-container::before {
   content: '';
   position: absolute;
@@ -162,6 +182,7 @@
   border-radius: 0 0 4px 4px;
 }
 
+/* Modal Title */
 .admin-modal-title {
   font-size: 2rem;
   font-weight: bold;
@@ -170,6 +191,7 @@
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
 }
 
+/* Modal Description */
 .admin-modal-description {
   font-size: 1rem;
   line-height: 1.6;
@@ -177,11 +199,11 @@
   color: #555;
 }
 
+/* Input Fields */
 .admin-input-group {
   position: relative;
   margin-bottom: 20px;
   text-align: left;
-  width: 100%; 
 }
 
 .input-icon {
@@ -190,13 +212,11 @@
   top: 50%;
   transform: translateY(-50%);
   color: #888;
-  z-index: 10;
 }
 
 .admin-input {
   width: 100%;
-  box-sizing: border-box;
-  padding: 12px 12px 12px 35px;
+  padding: 12px 12px 12px 35px; /* Space for icon */
   font-size: 1rem;
   border: 1px solid #ddd;
   border-radius: 4px;
@@ -208,12 +228,14 @@
   border-color: #aa0022;
 }
 
+/* Buttons Container */
 .admin-modal-buttons {
   display: flex;
   gap: 15px;
   margin-top: 20px;
 }
 
+/* Submit Button - Styled like dashboard-btn */
 .admin-submit-btn {
   flex: 1;
   background-color: #aa0022;
@@ -239,6 +261,7 @@
   transform: none;
 }
 
+/* Cancel Button */
 .admin-cancel-btn {
   flex: 1;
   background-color: #666;
@@ -257,13 +280,12 @@
   background-color: #444;
 }
 
+/* Status Messages */
 .admin-message {
   margin-bottom: 15px;
   padding: 10px;
   border-radius: 4px;
   font-size: 0.9rem;
-  width: 100%; 
-  box-sizing: border-box;
 }
 .admin-message.success {
   background-color: #d4edda;
@@ -276,19 +298,21 @@
   border: 1px solid #f5c6cb;
 }
 
+/* Dark Mode Overrides */
 .admin-modal-container.dark {
   background-color: #444;
   color: #f4f4f4;
 }
 
 .admin-modal-container.dark .admin-modal-title {
-  color: #ffd700;
+  color: #ffd700; /* Gold */
 }
 
 .admin-modal-container.dark .admin-modal-description {
   color: #ccc;
 }
 
+/* Animations */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
