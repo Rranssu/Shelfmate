@@ -1,13 +1,32 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaBookOpen, FaClipboardList, FaClock } from 'react-icons/fa';
 import './styles/overview.css';
 
-function Overview() {
-  const stats = {
-    booksBorrowed: 45,
-    entries: 32,
-    toBeReturned: 12
-  };
+function Overview({ libraryUid }) {
+  const [stats, setStats] = useState({
+    booksBorrowedToday: 0,
+    entriesToday: 0,
+    toBeReturned: 0
+  });
+
+  useEffect(() => {
+    if (!libraryUid) return;
+
+    const fetchStats = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/api/dashboard/today-stats?libraryUid=${libraryUid}`);
+        const data = await response.json();
+        
+        if (response.ok) {
+          setStats(data);
+        }
+      } catch (error) {
+        console.error('Error fetching overview:', error);
+      }
+    };
+
+    fetchStats();
+  }, [libraryUid]);
 
   return (
     <div className="overview-container">
@@ -16,20 +35,23 @@ function Overview() {
         <div className="stat-item">
           <FaBookOpen className="stat-icon" />
           <div>
-            <p className="stat-number">{stats.booksBorrowed}</p>
-            <p className="stat-label">Books Borrowed</p>
+            {/* Displaying Books Borrowed TODAY */}
+            <p className="stat-number">{stats.booksBorrowedToday}</p>
+            <p className="stat-label">Borrowed Today</p>
           </div>
         </div>
         <div className="stat-item">
           <FaClipboardList className="stat-icon" />
           <div>
-            <p className="stat-number">{stats.entries}</p>
-            <p className="stat-label">Entries</p>
+            {/* Displaying Entry Logs TODAY */}
+            <p className="stat-number">{stats.entriesToday}</p>
+            <p className="stat-label">Entries Today</p>
           </div>
         </div>
         <div className="stat-item">
           <FaClock className="stat-icon" />
           <div>
+            {/* Displaying Total Active Loans */}
             <p className="stat-number">{stats.toBeReturned}</p>
             <p className="stat-label">To Be Returned</p>
           </div>

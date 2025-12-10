@@ -1,21 +1,57 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './styles/recentEntry.css';
 
-function RecentEntry() {
-  const entries = [
-    { id: 1, student: 'John Doe', book: 'Harry Potter', action: 'Borrowed', time: '10:30 AM' },
-    { id: 2, student: 'Jane Smith', book: 'To Kill a Mockingbird', action: 'Returned', time: '11:15 AM' },
-    { id: 3, student: 'Bob Johnson', book: '1984', action: 'Borrowed', time: '12:00 PM' }
-  ];
+function RecentEntry({ libraryUid }) {
+  const [entries, setEntries] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!libraryUid) return;
+
+    const fetchTransactions = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/api/dashboard/recent-transactions?libraryUid=${libraryUid}`);
+        const data = await response.json();
+        
+        if (response.ok) {
+          setEntries(data.transactions);
+        }
+      } catch (error) {
+        console.error('Error fetching recent transactions:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTransactions();
+  }, [libraryUid]);
+
+  // Helper to format date nicely
+  const formatTime = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
 
   return (
     <div className="recent-entry-container">
-      <h2>Recent Entries</h2>
+      <h2>Recent Book Activity</h2>
       <div className="entries-list">
-        {entries.map(entry => (
-          <div key={entry.id} className="entry-item">
-            <p><strong>{entry.student}</strong> {entry.action} <em>{entry.book}</em></p>
-            <p className="entry-time">{entry.time}</p>
+        {loading && <p style={{textAlign:'center', color:'#888'}}>Loading...</p>}
+        
+        {!loading && entries.length === 0 && (
+          <p style={{textAlign:'center', color:'#888'}}>No recent activity.</p>
+        )}
+
+        {entries.map((entry, index) => (
+          <div key={index} className="entry-item">
+            <p>
+              <strong>{entry.student}</strong>{' '}
+              <span className={entry.action === 'Returned' ? 'action-returned' : 'action-borrowed'}>
+                {entry.action}
+              </span>{' '}
+              <em>{entry.book}</em>
+            </p>
+            <p className="entry-time">{formatTime(entry.time)}</p>
           </div>
         ))}
       </div>

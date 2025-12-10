@@ -34,7 +34,7 @@ function generateUID() {
 }
 
 // ==========================================
-// 1. AUTHENTICATION (Register & Login)
+// 1. AUTHENTICATION
 // ==========================================
 
 // Register Library & Admin User
@@ -70,7 +70,7 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
-// Library Login
+// Library Login (Standard User)
 app.post('/api/login', (req, res) => {
   const { email, password } = req.body;
   
@@ -103,7 +103,7 @@ app.post('/api/login', (req, res) => {
   });
 });
 
-// Admin Verification (For accessing Admin Panel)
+// Admin Login (For Admin Panel Access)
 app.post('/api/admin-login', (req, res) => {
   const { password, libraryUid } = req.body;
   
@@ -122,7 +122,7 @@ app.post('/api/admin-login', (req, res) => {
 });
 
 // ==========================================
-// 2. DASHBOARD OPERATIONS
+// 2. CORE OPERATIONS (Log, Borrow, Return)
 // ==========================================
 
 // Log Student Entry (STRICT: Student Must Exist)
@@ -146,7 +146,7 @@ app.post('/api/log-entry', (req, res) => {
     
     const studentName = results[0].name;
 
-    // 3. Log entry (Only if student exists)
+    // 3. Log entry
     const logQuery = 'INSERT INTO logs (library_uid, student_id) VALUES (?, ?)';
     db.execute(logQuery, [libraryUid, studentId], (err) => {
       if (err) {
@@ -172,7 +172,7 @@ app.post('/api/borrow-book', (req, res) => {
     
     const book = bookResults[0];
     
-    // 2. Check Student (STRICT CHECK)
+    // 2. Check Student
     const checkStudentQuery = 'SELECT id, name FROM students WHERE student_id = ? AND library_uid = ?';
     db.execute(checkStudentQuery, [studentId, libraryUid], (err, studentResults) => {
       if (err) return res.status(500).json({ message: 'Database error checking student' });
@@ -245,10 +245,7 @@ app.get('/api/student-books', (req, res) => {
   
   const studentQuery = 'SELECT name FROM students WHERE student_id = ? AND library_uid = ?';
   db.execute(studentQuery, [studentId, libraryUid], (err, studentResults) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ message: 'Database error fetching student' });
-    }
+    if (err) return res.status(500).json({ message: 'Database error fetching student' });
     
     const studentName = studentResults.length > 0 ? studentResults[0].name : 'Unknown';
     
@@ -260,10 +257,7 @@ app.get('/api/student-books', (req, res) => {
     `;
     
     db.execute(booksQuery, [libraryUid, studentId], (err, booksResults) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).json({ message: 'Database error fetching books' });
-      }
+      if (err) return res.status(500).json({ message: 'Database error fetching books' });
       
       res.json({
         studentName,
@@ -280,7 +274,7 @@ app.get('/api/student-books', (req, res) => {
 });
 
 // ==========================================
-// 3. ADMIN MANAGEMENT (Students, Inventory, Logs)
+// 3. ADMIN MANAGEMENT (CRUD)
 // ==========================================
 
 // --- Students ---
@@ -377,6 +371,84 @@ app.get('/api/logs', (req, res) => {
   db.execute(query, [libraryUid], (err, results) => {
     if (err) return res.status(500).json({ message: 'Database error' });
     res.json({ logs: results });
+  });
+});
+
+// ==========================================
+// 4. DASHBOARD WIDGETS
+// ==========================================
+
+// Inventory Summary
+app.get('/api/inventory-summary', (req, res) => {
+  const { libraryUid } = req.query;
+
+  if (!libraryUid) return res.status(400).json({ message: 'Library UID required' });
+
+  const query = `
+    SELECT 
+      COUNT(*) as totalBooks,
+      SUM(CASE WHEN available = 1 THEN 1 ELSE 0 END) as availableBooks
+    FROM books 
+    WHERE library_uid = ?
+  `;
+
+  db.execute(query, [libraryUid], (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ message: 'Database error' });
+    }
+
+    const row = results[0];
+    const total = row.totalBooks || 0;
+    const available = row.availableBooks || 0;
+    const borrowed = total - available;
+
+    res.json({ totalBooks: total, availableBooks: available, borrowedBooks: borrowed });
+  });
+});
+
+// Overview Stats (Today's Activity)
+app.get('/api/dashboard/today-stats', (req, res) => {
+  const { libraryUid } = req.query;
+
+  const query = `
+    SELECT 
+      (SELECT COUNT(*) FROM borrows WHERE library_uid = ? AND DATE(borrowed_at) = CURDATE()) as booksBorrowedToday,
+      (SELECT COUNT(*) FROM logs WHERE library_uid = ? AND DATE(logged_at) = CURDATE()) as entriesToday,
+      (SELECT COUNT(*) FROM borrows WHERE library_uid = ? AND returned = 0) as toBeReturned
+  `;
+
+  db.execute(query, [libraryUid, libraryUid, libraryUid], (err, results) => {
+    if (err) return res.status(500).json({ message: 'Database error' });
+    res.json(results[0]);
+  });
+});
+
+// Recent Book Transactions
+app.get('/api/dashboard/recent-transactions', (req, res) => {
+  const { libraryUid } = req.query;
+
+  const query = `
+    SELECT s.name as student, b.title as book, br.returned, br.borrowed_at
+    FROM borrows br
+    JOIN students s ON br.student_id = s.student_id AND br.library_uid = s.library_uid
+    JOIN books b ON br.book_id = b.id
+    WHERE br.library_uid = ?
+    ORDER BY br.borrowed_at DESC
+    LIMIT 5
+  `;
+
+  db.execute(query, [libraryUid], (err, results) => {
+    if (err) return res.status(500).json({ message: 'Database error' });
+    
+    const transactions = results.map(row => ({
+      student: row.student,
+      book: row.book,
+      action: row.returned ? 'Returned' : 'Borrowed',
+      time: row.borrowed_at
+    }));
+
+    res.json({ transactions });
   });
 });
 

@@ -4,14 +4,15 @@ import RecentEntry from './recentEntry';
 import InventorySummary from './inventorySummary';
 import './styles/adminDashboard.css';
 
-function AdminDashboard() {
+function AdminDashboard({ libraryUid }) { 
     return (
         <main className="admin-dashboard">
             <div className="dashboard-content">
                 <div className="dashboard-grid">
-                    <Overview />
-                    <RecentEntry />
-                    <InventorySummary />
+                    {/* 2. Pass prop down */}
+                    <Overview libraryUid={libraryUid} />
+                    <RecentEntry libraryUid={libraryUid} />
+                    <InventorySummary libraryUid={libraryUid} />
                 </div>
             </div>
         </main>
