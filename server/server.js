@@ -11,12 +11,12 @@ const PORT = 5000;
 app.use(cors());
 app.use(express.json());
 
-// MySQL Connection (adjust credentials as needed for XAMPP)
+// MySQL Connection
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: '', // Default XAMPP password is empty
-  database: 'shelfmate'  // Updated database name
+  password: '', // Default XAMPP password
+  database: 'shelfmate'
 });
 
 db.connect((err) => {
@@ -32,10 +32,11 @@ function generateUID() {
   return uuidv4();
 }
 
-// API Routes
+// ==========================================
+// 1. AUTHENTICATION & REGISTRATION ROUTES
+// ==========================================
 
-// 1. UPDATED REGISTER ROUTE
-// Creates the library AND creates the first Admin User in the users table
+// Register Library & Admin User
 app.post('/api/register', async (req, res) => {
   const { libraryName, libraryType, email, password } = req.body;
   
@@ -43,25 +44,21 @@ app.post('/api/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const uid = generateUID();
     
-    // 1. Insert into Libraries table (Start Transaction logic ideally, but keeping it simple for XAMPP)
+    // 1. Create Library
     const libQuery = 'INSERT INTO libraries (name, type, email, uid) VALUES (?, ?, ?, ?)';
-    
     db.execute(libQuery, [libraryName, libraryType, email, uid], (err, libResult) => {
       if (err) {
         if (err.code === 'ER_DUP_ENTRY') return res.status(400).json({ message: 'Email already exists' });
-        return res.status(500).json({ message: 'Database error on library creation' });
+        return res.status(500).json({ message: 'Database error creating library' });
       }
 
-      // 2. Insert into Users table as the "Admin"
-      // We use the same email and password provided in registration
+      // 2. Create Admin User
       const userQuery = 'INSERT INTO users (name, email, password, library_uid, is_admin) VALUES (?, ?, ?, ?, ?)';
-      
       db.execute(userQuery, ['Admin', email, hashedPassword, uid, true], (err, userResult) => {
         if (err) {
           console.error(err);
           return res.status(500).json({ message: 'Library created, but failed to create Admin user' });
         }
-        
         res.status(201).json({ message: 'Registration successful', library_uid: uid });
       });
     });
@@ -70,12 +67,11 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
-// 2. UPDATED ADMIN LOGIN ROUTE
-// Checks the 'users' table for the admin password instead of the libraries table
+// Admin Login (Checks Users Table)
 app.post('/api/admin-login', (req, res) => {
   const { password, libraryUid } = req.body;
   
-  // Find the user in this library who has the 'is_admin' flag set to TRUE
+  // Find the admin user for this library
   const query = 'SELECT password FROM users WHERE library_uid = ? AND is_admin = TRUE LIMIT 1';
   
   db.execute(query, [libraryUid], async (err, results) => {
@@ -86,8 +82,6 @@ app.post('/api/admin-login', (req, res) => {
     }
     
     const adminUser = results[0];
-    
-    // Compare the input password with the hashed password in the users table
     const isValidPassword = await bcrypt.compare(password, adminUser.password);
     
     if (!isValidPassword) {
@@ -98,71 +92,20 @@ app.post('/api/admin-login', (req, res) => {
   });
 });
 
+// ==========================================
+// 2. DASHBOARD OPERATIONS (Log, Borrow, Return)
+// ==========================================
 
-// Login Library
-app.post('/api/login', (req, res) => {
-  const { email, password } = req.body;
-  
-  const query = 'SELECT * FROM libraries WHERE email = ?';
-  db.execute(query, [email], async (err, results) => {
-    if (err) return res.status(500).json({ message: 'Database error' });
-    
-    if (results.length === 0) {
-      return res.status(401).json({ message: 'Invalid credentials' });
-    }
-    
-    const library = results[0];
-    const isValidPassword = await bcrypt.compare(password, library.password);
-    
-    if (!isValidPassword) {
-      return res.status(401).json({ message: 'Invalid credentials' });
-    }
-    
-    res.json({
-      library_name: library.name,
-      library_type: library.type,
-      library_uid: library.uid
-    });
-  });
-});
-
-// Admin Login
-app.post('/api/admin-login', (req, res) => {
-  const { password, libraryUid } = req.body;
-  
-  const query = 'SELECT admin_password FROM libraries WHERE uid = ?';
-  db.execute(query, [libraryUid], async (err, results) => {
-    if (err) return res.status(500).json({ message: 'Database error' });
-    
-    if (results.length === 0) {
-      return res.status(404).json({ message: 'Library not found' });
-    }
-    
-    const library = results[0];
-    if (!library.admin_password) {
-      return res.status(400).json({ message: 'Admin password not set for this library' });
-    }
-    
-    const isValidPassword = await bcrypt.compare(password, library.admin_password);
-    if (!isValidPassword) {
-      return res.status(401).json({ message: 'Invalid admin password' });
-    }
-    
-    res.json({ message: 'Admin login successful' });
-  });
-});
-
-// Log Entry
+// Log Student Entry
 app.post('/api/log-entry', (req, res) => {
   const { libraryUid, studentId } = req.body;
   
-  // Check if library exists
   const libraryQuery = 'SELECT id FROM libraries WHERE uid = ?';
   db.execute(libraryQuery, [libraryUid], (err, libraryResults) => {
     if (err) return res.status(500).json({ message: 'Database error' });
     if (libraryResults.length === 0) return res.status(404).json({ message: 'Library not found' });
     
-    // Insert or update student
+    // Ensure student exists in DB (Upsert)
     const studentQuery = 'INSERT INTO students (student_id, library_uid) VALUES (?, ?) ON DUPLICATE KEY UPDATE id=id';
     db.execute(studentQuery, [studentId, libraryUid], (err) => {
       if (err) return res.status(500).json({ message: 'Database error' });
@@ -181,57 +124,34 @@ app.post('/api/log-entry', (req, res) => {
 app.post('/api/borrow-book', (req, res) => {
   const { libraryUid, studentId, searchQuery, dueDate } = req.body;
   
-  // Check if library exists
-  const libraryQuery = 'SELECT id FROM libraries WHERE uid = ?';
-  db.execute(libraryQuery, [libraryUid], (err, libraryResults) => {
+  // Search for available book
+  const bookQuery = 'SELECT * FROM books WHERE library_uid = ? AND available = TRUE AND (title LIKE ? OR author LIKE ?)';
+  const searchPattern = `%${searchQuery}%`;
+  
+  db.execute(bookQuery, [libraryUid, searchPattern, searchPattern], (err, bookResults) => {
     if (err) return res.status(500).json({ message: 'Database error' });
-    if (libraryResults.length === 0) return res.status(404).json({ message: 'Library not found' });
+    if (bookResults.length === 0) return res.status(404).json({ message: 'No available book found matching search' });
     
-    // Search for available book
-    const bookQuery = 'SELECT * FROM books WHERE library_uid = ? AND available = TRUE AND (title LIKE ? OR author LIKE ?)';
-    const searchPattern = `%${searchQuery}%`;
-    db.execute(bookQuery, [libraryUid, searchPattern, searchPattern], (err, bookResults) => {
+    const book = bookResults[0]; // Take first match
+    
+    // Ensure student exists
+    const studentQuery = 'INSERT INTO students (student_id, library_uid) VALUES (?, ?) ON DUPLICATE KEY UPDATE id=id';
+    db.execute(studentQuery, [studentId, libraryUid], (err) => {
       if (err) return res.status(500).json({ message: 'Database error' });
-      if (bookResults.length === 0) return res.status(404).json({ message: 'No available book found matching the search' });
       
-      const book = bookResults[0]; // Take the first match
-      
-      // Insert student if not exists
-      const studentQuery = 'INSERT INTO students (student_id, library_uid) VALUES (?, ?) ON DUPLICATE KEY UPDATE id=id';
-      db.execute(studentQuery, [studentId, libraryUid], (err) => {
+      // Create borrow record
+      const borrowQuery = 'INSERT INTO borrows (student_id, book_id, library_uid, due_date) VALUES (?, ?, ?, ?)';
+      db.execute(borrowQuery, [studentId, book.id, libraryUid, dueDate], (err) => {
         if (err) return res.status(500).json({ message: 'Database error' });
         
-        // Create borrow record
-        const borrowQuery = 'INSERT INTO borrows (student_id, book_id, library_uid, due_date) VALUES (?, ?, ?, ?)';
-        db.execute(borrowQuery, [studentId, book.id, libraryUid, dueDate], (err, result) => {
+        // Mark book unavailable
+        const updateBookQuery = 'UPDATE books SET available = FALSE WHERE id = ?';
+        db.execute(updateBookQuery, [book.id], (err) => {
           if (err) return res.status(500).json({ message: 'Database error' });
-          
-          // Mark book as unavailable
-          const updateBookQuery = 'UPDATE books SET available = FALSE WHERE id = ?';
-          db.execute(updateBookQuery, [book.id], (err) => {
-            if (err) return res.status(500).json({ message: 'Database error' });
-            res.json({ message: `Book "${book.title}" borrowed successfully` });
-          });
+          res.json({ message: `Book "${book.title}" borrowed successfully` });
         });
       });
     });
-  });
-});
-
-// Get Borrowed Books
-app.get('/api/borrowed-books', (req, res) => {
-  const { libraryUid, studentId } = req.query;
-  
-  const query = `
-    SELECT b.id as borrow_id, bk.title, bk.author, br.borrowed_at, br.due_date
-    FROM borrows br
-    JOIN books bk ON br.book_id = bk.id
-    WHERE br.library_uid = ? AND br.student_id = ? AND br.returned = FALSE
-  `;
-  
-  db.execute(query, [libraryUid, studentId], (err, results) => {
-    if (err) return res.status(500).json({ message: 'Database error' });
-    res.json({ borrowedBooks: results });
   });
 });
 
@@ -239,20 +159,17 @@ app.get('/api/borrowed-books', (req, res) => {
 app.post('/api/return-book', (req, res) => {
   const { borrowId } = req.body;
   
-  // Get book_id from borrow record
   const getBorrowQuery = 'SELECT book_id FROM borrows WHERE id = ? AND returned = FALSE';
   db.execute(getBorrowQuery, [borrowId], (err, borrowResults) => {
     if (err) return res.status(500).json({ message: 'Database error' });
-    if (borrowResults.length === 0) return res.status(404).json({ message: 'Borrow record not found or already returned' });
+    if (borrowResults.length === 0) return res.status(404).json({ message: 'Borrow record not found' });
     
     const bookId = borrowResults[0].book_id;
     
-    // Mark borrow as returned
     const returnQuery = 'UPDATE borrows SET returned = TRUE WHERE id = ?';
     db.execute(returnQuery, [borrowId], (err) => {
       if (err) return res.status(500).json({ message: 'Database error' });
       
-      // Mark book as available
       const updateBookQuery = 'UPDATE books SET available = TRUE WHERE id = ?';
       db.execute(updateBookQuery, [bookId], (err) => {
         if (err) return res.status(500).json({ message: 'Database error' });
@@ -262,25 +179,37 @@ app.post('/api/return-book', (req, res) => {
   });
 });
 
-// Get Student Info and Borrowed Books (for ReturnListUI)
+// Get Borrowed Books (General Search)
+app.get('/api/borrowed-books', (req, res) => {
+  const { libraryUid, studentId } = req.query;
+  const query = `
+    SELECT b.id as borrow_id, bk.title, bk.author, br.borrowed_at, br.due_date
+    FROM borrows br
+    JOIN books bk ON br.book_id = bk.id
+    WHERE br.library_uid = ? AND br.student_id = ? AND br.returned = FALSE
+  `;
+  db.execute(query, [libraryUid, studentId], (err, results) => {
+    if (err) return res.status(500).json({ message: 'Database error' });
+    res.json({ borrowedBooks: results });
+  });
+});
+
+// Get Borrowed Books (Detailed List for ReturnListUI)
 app.get('/api/student-books', (req, res) => {
   const { libraryUid, studentId } = req.query;
   
-  // Get student info
   const studentQuery = 'SELECT name FROM students WHERE student_id = ? AND library_uid = ?';
   db.execute(studentQuery, [studentId, libraryUid], (err, studentResults) => {
     if (err) return res.status(500).json({ message: 'Database error' });
     
     const studentName = studentResults.length > 0 ? studentResults[0].name : 'Unknown';
     
-    // Get borrowed books
     const booksQuery = `
       SELECT b.id as borrow_id, bk.title, bk.author, br.due_date, br.borrowed_at
       FROM borrows br
       JOIN books bk ON br.book_id = bk.id
       WHERE br.library_uid = ? AND br.student_id = ? AND br.returned = FALSE
     `;
-    
     db.execute(booksQuery, [libraryUid, studentId], (err, booksResults) => {
       if (err) return res.status(500).json({ message: 'Database error' });
       
@@ -298,92 +227,63 @@ app.get('/api/student-books', (req, res) => {
   });
 });
 
-// Get Users (for AdminUsers component)
-app.get('/api/users', (req, res) => {
+// ==========================================
+// 3. ADMIN: STUDENT MANAGEMENT
+// ==========================================
+
+// Get All Students
+app.get('/api/students', (req, res) => {
   const { libraryUid } = req.query;
-  
-  if (!libraryUid) {
-    return res.status(400).json({ message: 'Library UID required' });
-  }
-  
-  const query = 'SELECT id, name, email, library_uid FROM users WHERE library_uid = ?';
+  // Returning 'users' key to match frontend expectation in AdminUsers component
+  const query = 'SELECT id, student_id, name FROM students WHERE library_uid = ? ORDER BY name ASC';
   db.execute(query, [libraryUid], (err, results) => {
     if (err) return res.status(500).json({ message: 'Database error' });
-    res.json({ users: results });
+    res.json({ users: results }); 
   });
 });
 
-// Add User
-app.post('/api/users', (req, res) => {
-  const { name, email, libraryUid } = req.body;
-  
-  if (!name || !email || !libraryUid) {
-    return res.status(400).json({ message: 'Name, email, and library UID are required' });
-  }
-  
-  const query = 'INSERT INTO users (name, email, library_uid) VALUES (?, ?, ?)';
-  db.execute(query, [name, email, libraryUid], (err, result) => {
+// Add Student
+app.post('/api/students', (req, res) => {
+  const { name, student_id, libraryUid } = req.body;
+  const query = 'INSERT INTO students (name, student_id, library_uid) VALUES (?, ?, ?)';
+  db.execute(query, [name, student_id, libraryUid], (err, result) => {
     if (err) {
-      if (err.code === 'ER_DUP_ENTRY') {
-        return res.status(400).json({ message: 'Email already exists' });
-      }
+      if (err.code === 'ER_DUP_ENTRY') return res.status(400).json({ message: 'Student ID already exists' });
       return res.status(500).json({ message: 'Database error' });
     }
-    res.status(201).json({ message: 'User added successfully', userId: result.insertId });
+    res.status(201).json({ message: 'Student added successfully' });
   });
 });
 
-// Update User
-app.put('/api/users/:id', (req, res) => {
+// Update Student
+app.put('/api/students/:id', (req, res) => {
   const { id } = req.params;
-  const { name, email, libraryUid } = req.body;
-  
-  if (!name || !email || !libraryUid) {
-    return res.status(400).json({ message: 'Name, email, and library UID are required' });
-  }
-  
-  const query = 'UPDATE users SET name = ?, email = ? WHERE id = ? AND library_uid = ?';
-  db.execute(query, [name, email, id, libraryUid], (err, result) => {
-    if (err) {
-      if (err.code === 'ER_DUP_ENTRY') {
-        return res.status(400).json({ message: 'Email already exists' });
-      }
-      return res.status(500).json({ message: 'Database error' });
-    }
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: 'User not found or not authorized' });
-    }
-    res.json({ message: 'User updated successfully' });
+  const { name, student_id, libraryUid } = req.body;
+  const query = 'UPDATE students SET name = ?, student_id = ? WHERE id = ? AND library_uid = ?';
+  db.execute(query, [name, student_id, id, libraryUid], (err) => {
+    if (err) return res.status(500).json({ message: 'Database error' });
+    res.json({ message: 'Student updated successfully' });
   });
 });
 
-// Delete User
-app.delete('/api/users/:id', (req, res) => {
+// Delete Student
+app.delete('/api/students/:id', (req, res) => {
   const { id } = req.params;
   const { libraryUid } = req.body;
-  
-  if (!libraryUid) {
-    return res.status(400).json({ message: 'Library UID required' });
-  }
-  
-  const query = 'DELETE FROM users WHERE id = ? AND library_uid = ?';
-  db.execute(query, [id, libraryUid], (err, result) => {
+  const query = 'DELETE FROM students WHERE id = ? AND library_uid = ?';
+  db.execute(query, [id, libraryUid], (err) => {
     if (err) return res.status(500).json({ message: 'Database error' });
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: 'User not found or not authorized' });
-    }
-    res.json({ message: 'User deleted successfully' });
+    res.json({ message: 'Student deleted successfully' });
   });
 });
 
-// Get Books (for AdminInventory component)
+// ==========================================
+// 4. ADMIN: INVENTORY MANAGEMENT
+// ==========================================
+
+// Get Books
 app.get('/api/books', (req, res) => {
   const { libraryUid } = req.query;
-  
-  if (!libraryUid) {
-    return res.status(400).json({ message: 'Library UID required' });
-  }
-  
   const query = 'SELECT id, title, author, library_uid FROM books WHERE library_uid = ?';
   db.execute(query, [libraryUid], (err, results) => {
     if (err) return res.status(500).json({ message: 'Database error' });
@@ -394,11 +294,6 @@ app.get('/api/books', (req, res) => {
 // Add Book
 app.post('/api/books', (req, res) => {
   const { title, author, libraryUid } = req.body;
-  
-  if (!title || !author || !libraryUid) {
-    return res.status(400).json({ message: 'Title, author, and library UID are required' });
-  }
-  
   const query = 'INSERT INTO books (title, author, library_uid) VALUES (?, ?, ?)';
   db.execute(query, [title, author, libraryUid], (err, result) => {
     if (err) return res.status(500).json({ message: 'Database error' });
@@ -410,17 +305,9 @@ app.post('/api/books', (req, res) => {
 app.put('/api/books/:id', (req, res) => {
   const { id } = req.params;
   const { title, author, libraryUid } = req.body;
-  
-  if (!title || !author || !libraryUid) {
-    return res.status(400).json({ message: 'Title, author, and library UID are required' });
-  }
-  
   const query = 'UPDATE books SET title = ?, author = ? WHERE id = ? AND library_uid = ?';
   db.execute(query, [title, author, id, libraryUid], (err, result) => {
     if (err) return res.status(500).json({ message: 'Database error' });
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: 'Book not found or not authorized' });
-    }
     res.json({ message: 'Book updated successfully' });
   });
 });
@@ -429,29 +316,20 @@ app.put('/api/books/:id', (req, res) => {
 app.delete('/api/books/:id', (req, res) => {
   const { id } = req.params;
   const { libraryUid } = req.body;
-  
-  if (!libraryUid) {
-    return res.status(400).json({ message: 'Library UID required' });
-  }
-  
   const query = 'DELETE FROM books WHERE id = ? AND library_uid = ?';
   db.execute(query, [id, libraryUid], (err, result) => {
     if (err) return res.status(500).json({ message: 'Database error' });
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: 'Book not found or not authorized' });
-    }
     res.json({ message: 'Book deleted successfully' });
   });
 });
 
-// Get Logs (for EntryLogbook component)
+// ==========================================
+// 5. ADMIN: LOGS
+// ==========================================
+
+// Get Logs
 app.get('/api/logs', (req, res) => {
   const { libraryUid } = req.query;
-  
-  if (!libraryUid) {
-    return res.status(400).json({ message: 'Library UID required' });
-  }
-  
   const query = `
     SELECT l.student_id, s.name, l.logged_at
     FROM logs l
@@ -465,6 +343,7 @@ app.get('/api/logs', (req, res) => {
   });
 });
 
+// Start Server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
