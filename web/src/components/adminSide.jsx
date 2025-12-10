@@ -19,6 +19,14 @@ export default function AdminSide({ libraryUid, libraryName }) {
       </div>
 
       <div className="sidebar-menu">
+        <div style={{ marginTop: '20px', borderTop: '1px solid rgba(255,255,255,0.1)' }}></div>
+        <Link 
+          to="/dashboard" 
+          state={{ libraryUid, libraryName }} // IMPORTANT: Pass state back so Dashboard knows who you are
+          className="menu-item"
+        >
+          <FiArrowLeft className="menu-icon" /> Back to Library
+        </Link>
         <Link 
           to="/admin" 
           state={{ libraryUid, libraryName }}
@@ -53,14 +61,6 @@ export default function AdminSide({ libraryUid, libraryName }) {
 
         <Link to="/" className="menu-item logout">
           <FiLogOut className="menu-icon" /> Logout
-        </Link>
-        <div style={{ marginTop: '20px', borderTop: '1px solid rgba(255,255,255,0.1)' }}></div>
-        <Link 
-          to="/dashboard" 
-          state={{ libraryUid, libraryName }} // IMPORTANT: Pass state back so Dashboard knows who you are
-          className="menu-item"
-        >
-          <FiArrowLeft className="menu-icon" /> Back to Library
         </Link>
       </div>
     </div>
